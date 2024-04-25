@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Keyboard Example</title>
+    <script>
+        window.addEventListener("keydown", (e) => {
+            const key = document.getElementById(e.key);
+            if (e.key == "Enter") alert(document.getElementById("text").textContent);
+            if (key != null) document.getElementById("text").textContent = e.key;
+        });
+    </script>
+    <style>
+        .root {
+            width: 250px;
+            height: 300px;
+            display: grid;
+            background-color: grey;
+            grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-areas: "a1 a2 a3 a4"
+                "n7 n8 n9 np"
+                "n4 n5 n6 np"
+                "n1 n2 n3 nt"
+                "n0 n0 nd nt";
+
+        }
+
+        .root div {
+            background-color: grey;
+            padding: 5px;
+            margin: 3px;
+            text-align: center;
+            border: 2px solid black;
+        }
+
+        div:hover {
+            background-color: red;
+        }
+
+        .a1 {
+            grid-area: a1;
+        }
+
+        .a2 {
+            grid-area: a2;
+        }
+
+        .a3 {
+            grid-area: a3;
+        }
+
+        .a4 {
+            grid-area: a4;
+        }
+
+        .n7 {
+            grid-area: n7;
+        }
+
+        .n8 {
+            grid-area: n8;
+        }
+
+        .n9 {
+            grid-area: n9;
+        }
+
+        .np {
+            grid-area: np;
+        }
+
+        .n4 {
+            grid-area: n4;
+        }
+
+        .n5 {
+            grid-area: n5;
+        }
+
+        .n6 {
+            grid-area: n6;
+        }
+
+        .n1 {
+            grid-area: n1;
+        }
+
+        .n2 {
+            grid-area: n2;
+        }
+
+        .n3 {
+            grid-area: n3;
+        }
+
+        .nt {
+            grid-area: nt;
+        }
+
+        .n0 {
+            grid-area: n0;
+        }
+
+        .nd {
+            grid-area: nd;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="root">
+        <div id="Backspace" class="a1">←</div>
+        <div id="/" class="a2">/</div>
+        <div id="*" class="a3">*</div>
+        <div id="-" class="a4">-</div>
+        <div id="7" class="n7">7</div>
+        <div id="8" class="n8">8</div>
+        <div id="9" class="n9">9</div>
+        <div id="+" class="np">+</div>
+        <div id="4" class="n4">4</div>
+        <div id="5" class="n5">5</div>
+        <div id="6" class="n6">6</div>
+        <div id="1" class="n1">1</div>
+        <div id="2" class="n2">2</div>
+        <div id="3" class="n3">3</div>
+        <div id="Enter" class="nt">enter</div>
+        <div id="0" class="n0">0</div>
+        <div id="." class="nd">.</div>
+        </div>
+    </section>
+        <p id="text">hello!</p>
+</body>
+
+</html>

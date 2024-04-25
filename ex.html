@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Keyboard Example</title>
+    <style>
+        .container {
+            grid-gap: 10px;
+            display: grid;
+            grid-template-rows: 100px 150px 100px;
+            grid-template-columns: 75px 1fr 1fr 1fr 1fr;
+            grid-template-areas: "a1 a1 a2 a3 a4"
+                "b1 b2 b2 b2 b3"
+                "b1 c1 c2 c2 c2";
+        }
+
+        .a1 {
+            grid-area: a1;
+        }
+
+        .a2 {
+            grid-area: a2;
+        }
+
+        .a3 {
+            grid-area: a3;
+        }
+
+        .a4 {
+            grid-area: a4;
+        }
+
+        .b1 {
+            grid-area: b1;
+        }
+
+        .b2 {
+            grid-area: b2;
+        }
+
+        .b3 {
+            grid-area: b3;
+        }
+
+        .c1 {
+            grid-area: c1;
+        }
+
+        .c2 {
+            grid-area: c2;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="container">
+        <div class="yellow a1">A1</div>
+        <div class="yellow a2">A2</div>
+        <div class="yellow a3">A3</div>
+        <div class="yellow a4">A4</div>
+        <div class="orange b1">B1</div>
+        <div class="orange b2">B2</div>
+        <div class="orange b3">B3</div>
+        <div class="cyan c1">C1</div>
+        <div class="cyan c2">C2</div>
+    </section>
+</body>
+
+</html>

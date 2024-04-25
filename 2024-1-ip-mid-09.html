@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>인하대학교 홈페이지 회원가입</title>
+</head>
+
+<body>
+    <h1>인하대학교 홈페이지 회원가입</h1>
+    <h2>필수 정보</h2>
+    <form method="get" action="#">
+        <h3>이메일</h3>
+        <input type="text" name="email" placeholder="E-mail" />
+        <button type="button" name="button">형식 체크</button>
+        <h3>패스워드</h3>
+        <input type="password" name="passwd1" placeholder="Password" />
+        <h3>패스워드 재입력</h3>
+        <input type="password" name="passwd2" placeholder="Password (Repeate)" />
+        <h3>이름</h3>
+        <input type="text" name="username" placeholder="Name" />
+        <h3>성별</h3>
+        <input type="radio" name="gender" value="m"><span>남자 (Man)</span>
+        <input type="radio" name="gender" value="f"><span>여자 (Woman)</span>
+        <h3>분류</h3>
+        <select name="class">
+            <option value="u">학사과정 (Undergraduate)</option>
+            <option value="m">석사과정 (Master Student)</option>
+            <option value="p">박사/통합과정 (Ph.D. Student)</option>
+            <option value="f">교직원 (Faculty/Staff)</option>
+            <option value="s">학부모 (Student Parent)</option>
+            <option value="g">일반인 (General)</option>
+        </select>
+        <button type="submit">정보 제출</button>
+    </form>
+</body>
+
+</html>
