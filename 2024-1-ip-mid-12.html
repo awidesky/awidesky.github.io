@@ -8,7 +8,13 @@
         window.addEventListener("keydown", (e) => {
             const key = document.getElementById(e.key);
             if (e.key == "Enter") alert(document.getElementById("text").textContent);
-            if (key != null) document.getElementById("text").textContent = e.key;
+            if (key != null) {
+                if (e.key == "Backspace"){
+                let str = document.getElementById("text").textContent;
+                document.getElementById("text").textContent = str.substr(0, str.length-1);
+            }else if (e.key != "Enter")
+                    document.getElementById("text").textContent += e.key;
+            }
         });
     </script>
     <style>
@@ -130,7 +136,7 @@
         <div id="." class="nd">.</div>
         </div>
     </section>
-        <p id="text">hello!</p>
+        <p id="text"></p>
 </body>
 
 </html>
