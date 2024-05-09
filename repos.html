@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>jQuery Basic</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.getJSON('https://api.github.com/users/awidesky/repos',
+                function (data) {
+                    const repos = document.getElementById("repos");
+                    for (let i in data) {
+                        //document.write("<br><br>" + data[i]['downloads_url']);
+
+                        const div = document.createElement("div");
+                        const link = document.createElement("a");
+                        link.href = data[i]['html_url'];
+                        link.textContent = data[i]['name'];
+
+                        div.appendChild(document.createElement("p").appendChild(link));
+                        repos.appendChild(div);
+
+                        //download 버튼
+                        //license
+                    }
+                });
+        });
+        //JSON.stringify
+    </script>
+</head>
+
+<body>
+    <div id="repos">
+        <h1>My repos</h1>
+    </div>
+</body>
+
+</html>
