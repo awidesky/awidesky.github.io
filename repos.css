@@ -1,0 +1,11 @@
+.repos {
+    margin: 5px;
+    padding: 3px;
+    display: inline-block;
+    background-color: bisque;
+    border: solid 2px darkslategray;
+}
+
+p {
+    margin: 3px;
+}

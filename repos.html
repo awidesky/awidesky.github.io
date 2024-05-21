@@ -1,27 +1,88 @@
 <!DOCTYPE html>
 <html>
-
+<!-- 
+    fabicon 추가
+-->
 <head>
-    <title>jQuery Basic</title>
+    <title>awidesky.github.io</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link href="repos.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
     <script>
+        function httpGet(theUrl)
+        {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+           return xmlHttp.responseText;
+        }
+
         $(document).ready(function () {
             $.getJSON('https://api.github.com/users/awidesky/repos',
                 function (data) {
                     const repos = document.getElementById("repos");
                     for (let i in data) {
                         //document.write("<br><br>" + data[i]['downloads_url']);
+                        if(data[i]['visibility'] !='public') continue;
 
                         const div = document.createElement("div");
-                        const link = document.createElement("a");
-                        link.href = data[i]['html_url'];
-                        link.textContent = data[i]['name'];
 
-                        div.appendChild(document.createElement("p").appendChild(link));
+                        const repoLink = document.createElement("a");
+                        repoLink.href = data[i]['html_url'];
+                        repoLink.innerHTML = "<b>" + data[i]['name'] + "</b>";
+                        
+                        const releaseLink = document.createElement("a");
+                        releaseLink.href = data[i]['html_url'] + "/releases";
+                        releaseLink.textContent = "release";
+                        
+                        const desc = document.createElement("p"); //있을때만!!
+                        desc.textContent = data[i]['description']
+
+                        div.appendChild(repoLink);
+                        div.appendChild(document.createElement("br"))
+                        if(data[i]['description'] != "") div.appendChild(desc)
+                        
+                        div.appendChild(releaseLink);
+
+                        div.classList.add("repos");
                         repos.appendChild(div);
 
                         //download 버튼
                         //license
+                        
+                        
+                        const maven = "https://central.sonatype.com/artifact/io.github.awidesky/" + data[i]['name'];
+                        
+                        /*
+                       $.get("https://github.com/awidesky/" + data[i]['name'] + "/blob/" + data[i]['default_branch'] + "/pom.xml")
+                            .done(function () {
+                                const btn = document.createElement("button")
+                                btn.onclick = "window.location='" + maven + "';";
+                                btn.textContent = "see in maven central";
+                                div.appendChild(btn);
+                            });
+                         */
+                        
+                        alert(httpGet("https://github.com/awidesky/" + data[i]['name'] + "/blob/" + data[i]['default_branch'] + "/pom.xml"))
+                        /*function (status) {
+                            if (status === 200) {
+                                const btn = document.createElement("button")
+                                btn.onclick = "window.location='" + maven + "';";
+                                btn.textContent = "see in maven central";
+                                div.appendChild(btn);
+                            } else if (status === 404) {
+                                // Execute code if not successful
+                            } else {
+                                // Execute code if status doesn't match above
+                            }
+                        */
+                        //download 버튼
+                        //license
+                    }
+                }).fail(function(response) {
+                    if(response["responseText"].includes("API rate limit")) {
+                        window.location.href = 'api_limit.html'
+                    } else {
+                        alert(JSON.stringify(response, null, 4))
                     }
                 });
         });
