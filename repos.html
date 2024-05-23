@@ -9,17 +9,61 @@
     <link href="repos.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
     <script>
-        function httpGet(theUrl)
+        function findGithubFile(repo, branch, file, callback)
         {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-           return xmlHttp.responseText;
+            //404 errors in browser are not hideable.
+            //see : https://stackoverflow.com/questions/44019776/fetch-api-chrome-and-404-errors
+            fetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
+            .then(function(response) {
+                if(response.ok)
+                    callback();
+            });
+        }
+        function urlExists(url, callback) {
+            $.ajax({
+                type: 'HEAD',
+                url: url,
+                dataType:"jsonp",
+                timeout: "1000",
+                crossDomain: true,
+                xhrFields: { // this option
+                    withCredentials: true,
+                },
+                statusCode: {
+                    200: function () {
+                        callback();
+                    }
+                }
+            });
+        }
+        function downloadObjectAsJson(exportObj, exportName){
+          var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+          var downloadAnchorNode = document.createElement('a');
+          downloadAnchorNode.setAttribute("href",     dataStr);
+          downloadAnchorNode.setAttribute("download", exportName + ".json");
+          document.body.appendChild(downloadAnchorNode); // required for firefox
+          downloadAnchorNode.click();
+          downloadAnchorNode.remove();
         }
 
         $(document).ready(function () {
             $.getJSON('https://api.github.com/users/awidesky/repos',
                 function (data) {
+                    //downloadObjectAsJson(data, "repos")
                     const repos = document.getElementById("repos");
+                    data.sort(function(a, b) {
+                        if(a['fork'] == b['fork']) {
+                            //both of them are forked, or not forked
+                            const da = new Date(a['updated_at']);
+                            const db = new Date(b['updated_at']);
+                            return da < db ? 1 : (da > db ? -1 : 0);
+                        } else {
+                            //one of them is forked, the other is not.
+                            //the one which is not forked(my own repo)
+                            //should be listed first.
+                            return a['fork'] == 'false' ? -1 : 1;
+                        }
+                    });
                     for (let i in data) {
                         //document.write("<br><br>" + data[i]['downloads_url']);
                         if(data[i]['visibility'] !='public') continue;
@@ -46,11 +90,31 @@
                         div.classList.add("repos");
                         repos.appendChild(div);
 
-                        //download 버튼
+                        //release 버튼
                         //license
+                        //
+                        /*
+                         {
+                            "release": false
+                         }
+                         */
                         
                         
-                        const maven = "https://central.sonatype.com/artifact/io.github.awidesky/" + data[i]['name'];
+                        function addMavenDiv() {
+                            //denote that it's a maven project
+                            //const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + data[i]['name'] + "/";
+                            //const mavenCentral =                            "http://search.maven.org/solrsearch/select?q=g:\"io.github.awidesky\"+AND+a:" + data[i]['name'] + "&rows=20&wt=json";
+                            $.getJSON(mavenCentral, (mavenResp) => {
+                                downloadObjectAsJson(mavenResp)
+                                if(true) {
+                                   const btn = document.createElement("button")
+                                   btn.onclick = function() { window.open(mavenCentral) };
+                                   btn.textContent = "see in maven central";
+                                   div.appendChild(btn);
+                                };
+                            });
+                        }
+                        findGithubFile(data[i]['name'], data[i]['default_branch'], "pom.xml", addMavenDiv);
                         
                         /*
                        $.get("https://github.com/awidesky/" + data[i]['name'] + "/blob/" + data[i]['default_branch'] + "/pom.xml")
@@ -62,7 +126,7 @@
                             });
                          */
                         
-                        alert(httpGet("https://github.com/awidesky/" + data[i]['name'] + "/blob/" + data[i]['default_branch'] + "/pom.xml"))
+                       // alert(httpGet("https://github.com/awidesky/" + data[i]['name'] + "/blob/" + data[i]['default_branch'] + "/pom.xml"))
                         /*function (status) {
                             if (status === 200) {
                                 const btn = document.createElement("button")
