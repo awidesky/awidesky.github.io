@@ -9,3 +9,11 @@
 p {
     margin: 3px;
 }
+
+.title a {
+    display: inline-block;
+    background-color: #99ccff;
+    padding: 3px 3px;
+    border-radius: 5px;
+}
+

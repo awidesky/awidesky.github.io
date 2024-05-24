@@ -15,8 +15,12 @@
             //see : https://stackoverflow.com/questions/44019776/fetch-api-chrome-and-404-errors
             fetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
             .then(function(response) {
-                if(response.ok)
-                    callback();
+                if(response.ok) {
+                    response.text().then((t) => {
+                        callback(t);
+                        alert(response.header.get("content-type"));
+                    });
+                }
             });
         }
         function urlExists(url, callback) {
@@ -37,6 +41,7 @@
             });
         }
         function downloadObjectAsJson(exportObj, exportName){
+            //for debug
           var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
           var downloadAnchorNode = document.createElement('a');
           downloadAnchorNode.setAttribute("href",     dataStr);
@@ -70,9 +75,12 @@
 
                         const div = document.createElement("div");
 
-                        const repoLink = document.createElement("a");
-                        repoLink.href = data[i]['html_url'];
-                        repoLink.innerHTML = "<b>" + data[i]['name'] + "</b>";
+                        const repoLinkA = document.createElement("a");
+                        repoLinkA.href = data[i]['html_url'];
+                        repoLinkA.innerHTML = "<b>" + data[i]['name'] + "</b>";
+                        const repoLink = document.createElement("div");
+                        repoLink.appendChild(repoLinkA);
+                        repoLink.classList.add("title");
                         
                         const releaseLink = document.createElement("a");
                         releaseLink.href = data[i]['html_url'] + "/releases";
@@ -100,10 +108,12 @@
                          */
                         
                         
-                        function addMavenDiv() {
-                            //denote that it's a maven project
-                            //const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + data[i]['name'] + "/";
-                            //const mavenCentral =                            "http://search.maven.org/solrsearch/select?q=g:\"io.github.awidesky\"+AND+a:" + data[i]['name'] + "&rows=20&wt=json";
+                        function addMavenDiv(pom) {
+                            //check if it's deployed to maven central or not
+                            if(!pom.includes("<artifactId>nexus-staging-maven-plugin</artifactId>")) return;
+                            
+                            //denote that it's a maven library project
+                            const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + data[i]['name'] + "/";
                             $.getJSON(mavenCentral, (mavenResp) => {
                                 downloadObjectAsJson(mavenResp)
                                 if(true) {
@@ -116,29 +126,6 @@
                         }
                         findGithubFile(data[i]['name'], data[i]['default_branch'], "pom.xml", addMavenDiv);
                         
-                        /*
-                       $.get("https://github.com/awidesky/" + data[i]['name'] + "/blob/" + data[i]['default_branch'] + "/pom.xml")
-                            .done(function () {
-                                const btn = document.createElement("button")
-                                btn.onclick = "window.location='" + maven + "';";
-                                btn.textContent = "see in maven central";
-                                div.appendChild(btn);
-                            });
-                         */
-                        
-                       // alert(httpGet("https://github.com/awidesky/" + data[i]['name'] + "/blob/" + data[i]['default_branch'] + "/pom.xml"))
-                        /*function (status) {
-                            if (status === 200) {
-                                const btn = document.createElement("button")
-                                btn.onclick = "window.location='" + maven + "';";
-                                btn.textContent = "see in maven central";
-                                div.appendChild(btn);
-                            } else if (status === 404) {
-                                // Execute code if not successful
-                            } else {
-                                // Execute code if status doesn't match above
-                            }
-                        */
                         //download 버튼
                         //license
                     }
@@ -150,7 +137,6 @@
                     }
                 });
         });
-        //JSON.stringify
     </script>
 </head>
 
