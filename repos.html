@@ -11,10 +11,42 @@
     <script src="repos.js"></script>
     <script>
         $(document).ready(function () {
-            $.getJSON('https://api.github.com/users/awidesky/repos',
+            $.getJSON('https://api.github.com/users/awidesky/repos?per_page=100',
                       function (data) {
-                const repos = document.getElementById("repos");
-                addComponents(data, repos);
+                /*data.sort(function(a, b) {
+                    if(a['fork'] == b['fork']) {
+                        //both of them are forked, or not forked
+                        const da = new Date(a['updated_at']);
+                        const db = new Date(b['updated_at']);
+                        return da < db ? 1 : (da > db ? -1 : 0);
+                    } else {
+                        //one of them is forked, the other is not.
+                        //the one which is not forked(my own repo)
+                        //should be listed first.
+                        return a['fork'] ? 1 : -1;
+                    }
+                });*/
+                console.log("all : " + data.length);
+                const comp = (d1, d2) => d1 < d2 ? 1 : (d1 > d2 ? -1 : 0);;
+                const not_forked = data.filter(d => !d.fork);
+                not_forked.sort(comp);
+                const forked = data.filter(d => d.fork);
+                forked.sort(comp);
+                
+                console.log("not_forked : " + not_forked.length);
+                console.log("forked : " + forked.length);
+                
+                for (let i in not_forked) {
+                    const repoDiv = getRepoDiv(not_forked[i]);
+                    readProjectJson(not_forked[i], repoDiv);
+                    document.getElementById("not_forked_repos").appendChild(repoDiv);
+                }
+                for (let i in forked) {
+                    document.getElementById("forked_repos")
+                        .appendChild(getRepoDiv(forked[i]));
+
+                }
+                
             }).fail(function(response) {
                 if(response["responseText"].includes("API rate limit")) {
                     window.location.href = 'api_limit.html'
@@ -27,8 +59,12 @@
 </head>
 
 <body>
-    <div id="repos">
-        <h1>My repos</h1>
+    <div>
+        <h1>My repositories</h1>
+        <div id="not_forked_repos"></div>
+        <hr>
+        <h2>Forked repositories</h2>
+        <div id="forked_repos"></div>
     </div>
 </body>
 

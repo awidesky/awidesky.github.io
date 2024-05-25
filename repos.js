@@ -43,111 +43,86 @@ function downloadObjectAsJson(exportObj, exportName){
 }
 
 
-function addComponents(repos, parent_div) {
-    //downloadObjectAsJson(repos, "repos")
-    repos.sort(function(a, b) {
-        if(a['fork'] == b['fork']) {
-            //both of them are forked, or not forked
-            const da = new Date(a['updated_at']);
-            const db = new Date(b['updated_at']);
-            return da < db ? 1 : (da > db ? -1 : 0);
-        } else {
-            //one of them is forked, the other is not.
-            //the one which is not forked(my own repo)
-            //should be listed first.
-            return a['fork'] ? 1 : -1; //요게 문자열이 아니여야?
-        }
-    });
-    for (let i in repos) {
-        const div = document.createElement("div");
-        if(repos[i]['visibility'] !='public') continue;
-        
-        const title = document.createElement("div");
-        
-        const repoLink = document.createElement("a");
-        repoLink.href = repos[i]['html_url'];
-        repoLink.innerHTML = "<b>" + repos[i]['name'] + "</b>";
-        repoLink.classList.add("tag");
-        repoLink.classList.add("repoLink");
-        title.appendChild(repoLink);
-        
-        if(repos[i]['license'] != null) {
-            const license = document.createElement("a");
-            const li = repos[i]['license'];
-            console.log(JSON.stringify(li));
-            license.href = 'javascript:void(0);';
-            license.onclick = function redirectLicenseInfo() {
-                $.getJSON(li.url, (data) => {
-                    window.location.href = data.html_url;
-                });
-            };
-            license.textContent = li.spdx_id;
-            license.title = li.name;
-            license.classList.add("tag");
-            license.classList.add("license");
-            title.appendChild(license);
-        }
-        
-        if(repos[i]['language'] != null) {
-            const lang = document.createElement("p");
-            lang.textContent = repos[i]['language'];
-            lang.classList.add("tag");
-            lang.classList.add("lang");
-            title.appendChild(lang);
-        }
-        
-        title.classList.add("title");
-        div.appendChild(title);
-        
-        const releaseLink = document.createElement("a");
-        releaseLink.href = repos[i]['html_url'] + "/releases";
-        releaseLink.textContent = "release";
-        
-        const desc = document.createElement("p");
-        desc.textContent = repos[i]['description']
-        desc.classList.add("desc");
-        
-        
-        //div.appendChild(document.createElement("br"))
-        if(repos[i]['description'] != "") div.appendChild(desc)
-            div.appendChild(releaseLink);
-        
-        div.classList.add("repo");
-        
-        //release 버튼
-        //license
-        //language
-        //b['fork']한건지도 표시
-        //updated ~ ago
-        /*
-         { //myrepos.json
-         "release": false,
-         "mavenLib": true, //pom 찾을필요 없이
-         }
-         */
-        
-        
-        function addMavenDiv(pom) {
-            //check if it's deployed to maven central or not
-            if(!pom.includes("<artifactId>nexus-staging-maven-plugin</artifactId>")) return;
-            
-            //denote that it's a maven library project
-            const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + repos[i]['name'] + "/";
-            //$.getJSON(mavenCentral, (mavenResp) => {
-                //downloadObjectAsJson(mavenResp)
-                if(true) {
-                    const btn = document.createElement("button")
-                    btn.onclick = function() { window.open(mavenCentral) };
-                    btn.textContent = "see in maven central";
-                    div.appendChild(btn);
-                };
-            //});
-        }
-        findGithubFile(repos[i]['name'], repos[i]['default_branch'], "pom.xml", addMavenDiv);
-        
-        //download 버튼
-        //license
-        
-        parent_div.appendChild(div);
+function getRepoDiv(repo) {
+    const div = document.createElement("div");
+    
+    const title = document.createElement("div");
+    const repoLink = document.createElement("a");
+    repoLink.href = repo['html_url'];
+    repoLink.innerHTML = "<b>" + repo['name'] + "</b>";
+    repoLink.classList.add("tag");
+    repoLink.classList.add("repoLink");
+    title.appendChild(repoLink);
+    
+    const li = repo['license'];
+    if(li != null && li.name != "Other") {
+        const license = document.createElement("a");
+        license.href = 'javascript:void(0);';
+        license.onclick = function redirectLicenseInfo() {
+            $.getJSON(li.url, (data) => {
+                window.location.href = data.html_url;
+            });
+        };
+        license.textContent = li.spdx_id;
+        license.title = li.name;
+        license.classList.add("tag");
+        license.classList.add("license");
+        title.appendChild(license);
     }
+    
+    if(repo['language'] != null) {
+        const lang = document.createElement("p");
+        lang.textContent = repo['language'];
+        lang.classList.add("tag");
+        lang.classList.add("lang");
+        title.appendChild(lang);
+    }
+    
+    title.classList.add("title");
+    div.appendChild(title);
+    
+    const releaseLink = document.createElement("a");
+    releaseLink.href = repo['html_url'] + "/releases";
+    releaseLink.textContent = "release";
+    
+    const desc = document.createElement("p");
+    desc.textContent = repo['description']
+    desc.classList.add("desc");
+    
+    
+    //div.appendChild(document.createElement("br"))
+    if(repo['description'] != "") div.appendChild(desc)
+        div.appendChild(releaseLink);
+    
+    div.classList.add("repo");
+    
+    //release 버튼
+    //updated ~ ago
+    /*
+     { //myrepos.json
+     "release": false,
+     "mavenLib": true, //pom 찾을필요 없이
+     }
+     */
+    
+    return div;
+}
+
+function readProjectJson(repo, div) {
+    
+    function addMavenDiv(pom) {
+        //check if it's deployed to maven central or not
+        if(!pom.includes("<artifactId>nexus-staging-maven-plugin</artifactId>")) return;
+        
+        //denote that it's a maven library project
+        const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + repo['name'] + "/";
+        if(true) {
+            const btn = document.createElement("button")
+            btn.onclick = function() { window.open(mavenCentral) };
+            btn.textContent = "see in maven central";
+            div.appendChild(btn);
+        };
+    }
+    if(!repo.fork) findGithubFile(repo['name'], repo['default_branch'], "pom.xml", addMavenDiv);
+    
 }

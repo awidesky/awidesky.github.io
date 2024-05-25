@@ -1,6 +1,5 @@
 .repo {
     margin: 5px;
-    padding: 3px;
     display: inline-block;
     vertical-align: top;
     background-color: bisque;
@@ -8,27 +7,25 @@
     max-width: 30%
 }
 
+.repo > * {
+    margin: 5px;
+}
+
 .desc {
     display: block;
-    margin: 3px;
     text-wrap: wrap;
     word-break: break-word;
 }
 
-.title {
-    padding: 3px;
-}
-
 .tag {
-    margin: 3px;
     display: inline;
-    padding: 3px 3px;
-    margin-bottom: 3px;
+    margin: 3px;
+    padding: 3px;
     border-radius: 5px;
 }
-
 .repoLink {
     background-color: #99ccff;
+    margin: 5px;
 }
 .license {
     background-color: white;
