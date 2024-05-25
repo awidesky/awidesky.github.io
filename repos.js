@@ -6,13 +6,14 @@ function findGithubFile(repo, branch, file, callback)
     fetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
     .then(function(response) {
         if(response.ok) {
+            //alert(response.header.get("content-type"));
             response.text().then((t) => {
                 callback(t);
-                alert(response.header.get("content-type"));
             });
         }
     });
 }
+
 function urlExists(url, callback) {
     $.ajax({
         type: 'HEAD',
@@ -54,31 +55,47 @@ function addComponents(repos, parent_div) {
             //one of them is forked, the other is not.
             //the one which is not forked(my own repo)
             //should be listed first.
-            return a['fork'] == 'false' ? -1 : 1; //요게 문자열이 아니여야?
+            return a['fork'] ? 1 : -1; //요게 문자열이 아니여야?
         }
     });
     for (let i in repos) {
         const div = document.createElement("div");
         if(repos[i]['visibility'] !='public') continue;
         
+        const title = document.createElement("div");
+        
         const repoLink = document.createElement("a");
         repoLink.href = repos[i]['html_url'];
         repoLink.innerHTML = "<b>" + repos[i]['name'] + "</b>";
-        
-        const license = document.createElement("p");
-        license.textContent = repos[i]['license']
-        license.classList.add("tag");
-        license.classList.add("license");
-        
-        const lang = document.createElement("p");
-        lang.textContent = repos[i]['language']
-        lang.classList.add("tag");
-        lang.classList.add("lang");
-        
-        const title = document.createElement("div");
+        repoLink.classList.add("tag");
+        repoLink.classList.add("repoLink");
         title.appendChild(repoLink);
-        title.appendChild(license);
-        title.appendChild(lang);
+        
+        if(repos[i]['license'] != null) {
+            const license = document.createElement("a");
+            const li = repos[i]['license'];
+            console.log(JSON.stringify(li));
+            license.href = 'javascript:void(0);';
+            license.onclick = function redirectLicenseInfo() {
+                $.getJSON(li.url, (data) => {
+                    window.location.href = data.html_url;
+                });
+            };
+            license.textContent = li.spdx_id;
+            license.title = li.name;
+            license.classList.add("tag");
+            license.classList.add("license");
+            title.appendChild(license);
+        }
+        
+        if(repos[i]['language'] != null) {
+            const lang = document.createElement("p");
+            lang.textContent = repos[i]['language'];
+            lang.classList.add("tag");
+            lang.classList.add("lang");
+            title.appendChild(lang);
+        }
+        
         title.classList.add("title");
         div.appendChild(title);
         
@@ -116,15 +133,15 @@ function addComponents(repos, parent_div) {
             
             //denote that it's a maven library project
             const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + repos[i]['name'] + "/";
-            $.getJSON(mavenCentral, (mavenResp) => {
-                downloadObjectAsJson(mavenResp)
+            //$.getJSON(mavenCentral, (mavenResp) => {
+                //downloadObjectAsJson(mavenResp)
                 if(true) {
                     const btn = document.createElement("button")
                     btn.onclick = function() { window.open(mavenCentral) };
                     btn.textContent = "see in maven central";
                     div.appendChild(btn);
                 };
-            });
+            //});
         }
         findGithubFile(repos[i]['name'], repos[i]['default_branch'], "pom.xml", addMavenDiv);
         
