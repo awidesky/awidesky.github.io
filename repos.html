@@ -66,7 +66,7 @@
                             //one of them is forked, the other is not.
                             //the one which is not forked(my own repo)
                             //should be listed first.
-                            return a['fork'] == 'false' ? -1 : 1;
+                            return a['fork'] == 'false' ? -1 : 1; //요게 문자열이 아니여야?
                         }
                     });
                     for (let i in data) {
@@ -75,35 +75,53 @@
 
                         const div = document.createElement("div");
 
-                        const repoLinkA = document.createElement("a");
-                        repoLinkA.href = data[i]['html_url'];
-                        repoLinkA.innerHTML = "<b>" + data[i]['name'] + "</b>";
-                        const repoLink = document.createElement("div");
-                        repoLink.appendChild(repoLinkA);
-                        repoLink.classList.add("title");
+                        const repoLink = document.createElement("a");
+                        repoLink.href = data[i]['html_url'];
+                        repoLink.innerHTML = "<b>" + data[i]['name'] + "</b>";
+                        
+                        const license = document.createElement("p");
+                        license.textContent = data[i]['license']
+                        license.classList.add("tag");
+                        license.classList.add("license");
+                        
+                        const lang = document.createElement("p");
+                        lang.textContent = data[i]['language']
+                        lang.classList.add("tag");
+                        lang.classList.add("lang");
+                        
+                        const title = document.createElement("div");
+                        title.appendChild(repoLink);
+                        title.appendChild(license);
+                        title.appendChild(lang);
+                        title.classList.add("title");
+                        div.appendChild(title);
                         
                         const releaseLink = document.createElement("a");
                         releaseLink.href = data[i]['html_url'] + "/releases";
                         releaseLink.textContent = "release";
                         
-                        const desc = document.createElement("p"); //있을때만!!
+                        const desc = document.createElement("p");
                         desc.textContent = data[i]['description']
+                        desc.classList.add("desc");
 
-                        div.appendChild(repoLink);
-                        div.appendChild(document.createElement("br"))
+                        
+                        //div.appendChild(document.createElement("br"))
                         if(data[i]['description'] != "") div.appendChild(desc)
                         
                         div.appendChild(releaseLink);
 
-                        div.classList.add("repos");
+                        div.classList.add("repo");
                         repos.appendChild(div);
 
                         //release 버튼
                         //license
-                        //
+                        //language
+                        //b['fork']한건지도 표시
+                        //updated ~ ago
                         /*
-                         {
-                            "release": false
+                         { //myrepos.json
+                            "release": false,
+                            "mavenLib": true, //pom 찾을필요 없이
                          }
                          */
                         
