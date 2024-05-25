@@ -66,6 +66,7 @@ function getRepoDiv(repo) {
         license.textContent = li.spdx_id;
         license.title = li.name;
         license.classList.add("tag");
+        license.classList.add("plainLink");
         license.classList.add("license");
         title.appendChild(license);
     }
