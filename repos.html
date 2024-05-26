@@ -36,8 +36,7 @@
                         }
                         for (let i in forked) {
                             document.getElementById("forked_repos")
-                            .appendChild(getRepoDiv(forked[i]));
-                            
+                                    .appendChild(getRepoDiv(forked[i]));
                         }
                     }, function(response) {
                         if(response["responseText"].includes("API rate limit")) {
