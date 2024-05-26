@@ -4,7 +4,17 @@
     vertical-align: top;
     background-color: bisque;
     border: solid 2px darkslategray;
-    max-width: 30%
+    border-radius: 8px;
+    max-width: 30%;
+}
+
+#loading h1 {
+    display: inline-block;
+    background-color: bisque;
+    color: blue;
+    padding: 10px;
+    border-radius: 15px;
+    margin-left: 5px;
 }
 
 .plainLink {
