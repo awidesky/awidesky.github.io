@@ -58,7 +58,7 @@ function getRepoDiv(repo) {
     if(li != null && li.name != "Other") {
         const license = document.createElement("a");
         license.href = 'javascript:void(0);';
-        license.onclick = function redirectLicenseInfo() {
+        license.onclick = () => {
             $.getJSON(li.url, (data) => {
                 window.location.href = data.html_url;
             });
