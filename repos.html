@@ -22,7 +22,11 @@
                     }
                     $.when.apply($, promises).then(function(data) {
                         data = [].concat(...data)
-                        const comp = (d1, d2) => d1 < d2 ? 1 : (d1 > d2 ? -1 : 0);;
+                        const comp = (r1, r2) => {
+                            d1 = new Date(r1.pushed_at);
+                            d2 = new Date(r2.pushed_at);
+                            return d1 < d2 ? 1 : (d1 > d2 ? -1 : 0);
+                        }
                         const not_forked = data.filter(d => !d.fork);
                         not_forked.sort(comp);
                         const forked = data.filter(d => d.fork);
