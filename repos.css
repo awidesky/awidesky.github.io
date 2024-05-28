@@ -32,7 +32,7 @@
 }
 
 .tag {
-    display: inline;
+    display: inline-block;
     margin: 3px;
     padding: 3px;
     border-radius: 5px;
@@ -46,4 +46,7 @@
 }
 .lang {
     background-color: yellow;
+}
+.updatedAt {
+    background-color: #D3D3D3;
 }

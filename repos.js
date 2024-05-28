@@ -14,37 +14,46 @@ function findGithubFile(repo, branch, file, callback)
     });
 }
 
-function urlExists(url, callback) {
-    $.ajax({
-        type: 'HEAD',
-        url: url,
-        dataType:"jsonp",
-        timeout: "1000",
-        crossDomain: true,
-        xhrFields: { // this option
-            withCredentials: true,
-        },
-        statusCode: {
-            200: function () {
-                callback();
-            }
-        }
-    });
-}
 function downloadObjectAsJson(exportObj, exportName){
     //for debug
   var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
   var downloadAnchorNode = document.createElement('a');
-  downloadAnchorNode.setAttribute("href",     dataStr);
+  downloadAnchorNode.setAttribute("href", dataStr);
   downloadAnchorNode.setAttribute("download", exportName + ".json");
   document.body.appendChild(downloadAnchorNode); // required for firefox
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
 }
 
+function getDateDiff(updatedAt, pushedAt) {
+    const u = updatedAt > pushedAt ? updatedAt : pushedAt;
+    const diff = new Date(new Date().getTime() - new Date(u).getTime());
+    const year = diff.getUTCFullYear() - 1970;
+    const month = diff.getUTCMonth();
+    const date = diff.getUTCDate() - 1;
+    const hours = diff.getUTCHours();
+    const mins = diff.getUTCMinutes();
+    let ret = "updated ";
+    if(year > 0) {
+        ret += year + "years ago";
+    } else if(month > 0) {
+        ret += month + "months ago";
+    } else if(date > 0) {
+        ret += date + "days ago";
+    } else if(hours > 0) {
+        ret += hours + "hours ago";
+    } else if(mins > 0) {
+        ret += mins + "minutes ago";
+    } else {
+        ret += diff.getUTCSeconds() + "seconds ago";
+    }
+    return ret;
+}
+
 
 function getRepoDiv(repo) {
     const div = document.createElement("div");
+    div.classList.add("repo");
     
     const title = document.createElement("div");
     const repoLink = document.createElement("a");
@@ -82,23 +91,26 @@ function getRepoDiv(repo) {
     title.classList.add("title");
     div.appendChild(title);
     
+    
+    if(repo['description'] != "") {
+        const desc = document.createElement("p");
+        desc.textContent = repo['description']
+        desc.classList.add("desc");
+        div.appendChild(desc);
+    }
+    
     const releaseLink = document.createElement("a");
     releaseLink.href = repo['html_url'] + "/releases";
     releaseLink.textContent = "release";
+    div.appendChild(releaseLink);
     
-    const desc = document.createElement("p");
-    desc.textContent = repo['description']
-    desc.classList.add("desc");
-    
-    
-    //div.appendChild(document.createElement("br"))
-    if(repo['description'] != "") div.appendChild(desc)
-        div.appendChild(releaseLink);
-    
-    div.classList.add("repo");
+    const updatedAt = document.createElement("p");
+    updatedAt.textContent = getDateDiff(repo['updated_at'], repo['pushed_at']);
+    updatedAt.classList.add("tag");
+    updatedAt.classList.add("updatedAt");
+    div.appendChild(updatedAt);
     
     //release 버튼
-    //updated ~ ago
     /*
      { //myrepos.json
      "release": false,
@@ -116,7 +128,7 @@ function readProjectJson(repo, div) {
         if(!pom.includes("<artifactId>nexus-staging-maven-plugin</artifactId>")) return;
         
         //denote that it's a maven library project
-        const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + repo['name'] + "/";
+        const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + repo['name'];
         if(true) {
             const btn = document.createElement("button")
             btn.onclick = function() { window.open(mavenCentral) };
