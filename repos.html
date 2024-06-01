@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
-    <!--
-    fabicon 추가
-    -->
     <head>
         <title>awidesky.github.io</title>
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link href="repos.css" rel="stylesheet" />
-        <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
         <script src="repos.js"></script>
         <script>
             $(document).ready(function () {
@@ -16,7 +14,13 @@
                     var promises = [];
                     let i = 1;
                     while(r_num > 0) {
-                        promises.push( $.getJSON('https://api.github.com/users/awidesky/repos?per_page=100&page=' + i));
+                        promises.push($.getJSON('https://api.github.com/users/awidesky/repos?per_page=100&page=' + i));
+                        /*
+                        , function(d,t,jqXHR) {
+                            console.log("Remaining api call limit : " + jqXHRs.getResponseHeader("x-ratelimit-remaining")
+                                            + ", next limit reset at : " + jqXHRs.getResponseHeader("x-ratelimit-reset")
+                        }));
+                        */
                         i++;
                         r_num -= 100;
                     }
@@ -32,24 +36,21 @@
                         const forked = data.filter(d => d.fork);
                         forked.sort(comp);
                         
+                        console.log("Not forked repos : " + not_forked.length + ", Forked repos : " + forked.length);
+
                         document.getElementById('loading').remove();
                         for (let i in not_forked) {
                             const repoDiv = getRepoDiv(not_forked[i]);
                             readProjectJson(not_forked[i], repoDiv);
+                            TODO(not_forked[i], not_forked[i]['default_branch']);
                             document.getElementById("not_forked_repos").appendChild(repoDiv);
                         }
                         for (let i in forked) {
                             document.getElementById("forked_repos")
                                     .appendChild(getRepoDiv(forked[i]));
                         }
-                    }, function(response) {
-                        if(response["responseText"].includes("API rate limit")) {
-                            window.location.href = 'api_limit.html';
-                        } else {
-                            alert(JSON.stringify(response, null, 4));
-                        }
-                    });
-                });
+                    }, githubApiFail);
+                }).fail(githubApiFail);
             });
         </script>
     </head>

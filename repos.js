@@ -1,3 +1,16 @@
+function githubApiFail(xhr) {
+    if (xhr["responseText"].includes("API rate limit")) {
+        //console.log(xhr.getResponseHeader("x-ratelimit-reset"));
+        window.location.href = 'api_limit.html';
+    } else {
+        alert(JSON.stringify(xhr, null, 4));
+    }
+}
+
+function getGithubAPI(query, callback) {
+    return $.getJSON('https://api.github.com/users/awidesky/' + query, callback)
+            .fail(githubApiFail);
+}
 
 function findGithubFile(repo, branch, file, callback) {
     /*
@@ -71,7 +84,7 @@ function getRepoDiv(repo) {
         const license = document.createElement("a");
         license.href = 'javascript:void(0);';
         license.onclick = () => {
-            $.getJSON(li.url, (data) => {
+            $.getJSON(li.url, (data) => { //TODO : 요것도 깃헙 API로
                 window.location.href = data.html_url;
             });
         };
@@ -143,4 +156,52 @@ function readProjectJson(repo, div) {
     }
     if (!repo.fork) findGithubFile(repo['name'], repo['default_branch'], "pom.xml", addMavenDiv);
 
+}
+
+
+
+let TODOUpdateTime = new Date(($.cookie("TODOUpdateTime") === undefined) ? "2000-01-01T01:00:00Z" : $.cookie("TODOUpdateTime"));
+const TODOQuery = "TODO :";
+function TODO(repo, branch) {
+    const pushedAt = new Date(repo.pushed_at);
+    const now = new Date();
+    const monthDiff = now.getMonth() - pushedAt.getMonth() + (12 * (now.getFullYear() - pushedAt.getFullYear()));
+    if (pushedAt <= TODOUpdateTime || monthDiff > 12) return;
+    //console.log("p : " + pushedAt.toString() + " t : " + TODOUpdateTime.toString() + " b : " + (pushedAt <= TODOUpdateTime));
+
+    $.getJSON("https://api.github.com/repos/awidesky/" + repo['name'] + "/git/trees/" + branch + "?recursive=1", (files) => {
+        files = files.tree;
+        $.cookie("TODOUpdateTime", new Date().toString(), {expires: 2147483647});
+        for (let idx in files) {
+            if (files[idx].type != "blob") continue; //only check "blob"(file), not "tree"(directory).
+
+            findGithubFile(repo['name'], branch, files[idx].path, (raw) => {
+                let todoList = [];
+                let i = 0;
+                let obj = {
+                    path: files[idx].path,
+                    repo: repo['name'],
+                    branch: branch
+                };
+                let todos = raw.split('\n')
+                    .forEach((s) => {
+                        i++;
+                        if (s.includes(TODOQuery)) {
+                            s = s.substr(s.indexOf(TODOQuery));
+                            obj.line = i;
+                            obj.str = s;
+                            todoList.push(obj);
+                        }
+                    });
+                
+                console.log("updated : " + todoList.length);
+                if(todoList.length > 0) console.log("In " + repo['name']);
+                todoList.forEach((obj) => {
+                    console.log("https://github.com/awidesky/" + obj.repo + "/blob/" + obj.branch + "/" + obj.path + "#L" + obj.line);
+                    //console.log("\t" + obj.path + " " + obj.line + " : " + obj.str);
+                });
+                //div 마ㄴ들고 집어넣기
+            });
+        };
+    }).fail(githubApiFail);
 }
