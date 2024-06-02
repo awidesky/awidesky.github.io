@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>awidesky.TODO</title>
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <link href="TODO.css" rel="stylesheet" />
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="commons.js"></script>
+        <script src="TODO.js"></script>
+        <script>
+            $(document).ready(function () {
+                    const not_forked = JSON.parse(localStorage.getItem("nfRepos"));
+                    document.getElementById('loading').remove();
+                    TODO(not_forked);
+                });
+        </script>
+    </head>
+    
+    <body>
+        <div>
+            <div style="display: inline-block;">
+                <h1>My TODO list</h1>
+            </div>
+            <div id="loading"><h1><i>Loading...</i></h1></div>
+            <div id="TODOs"></div>
+        </div>
+    </body>
+    
+</html>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>awidesky.github.io</title>
+        <title>awidesky.repos</title>
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link href="repos.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+        <script src="commons.js"></script>
         <script src="repos.js"></script>
         <script>
             $(document).ready(function () {
@@ -41,30 +41,35 @@
                         for (let i in not_forked) { //forEach로
                             const repoDiv = getRepoDiv(not_forked[i]);
                             readProjectJson(not_forked[i], repoDiv);
-                            //TODO(not_forked[i], not_forked[i]['default_branch']);
                             not_forked[i]['latest_branch'] = not_forked[i]['default_branch']
                             document.getElementById("not_forked_repos").appendChild(repoDiv);
                         }
-                        TODO(not_forked);
+                        localStorage.setItem("nfRepos", JSON.stringify(not_forked));
+                        //TODO(not_forked);
                         for (let i in forked) {
                             document.getElementById("forked_repos")
                                     .appendChild(getRepoDiv(forked[i]));
                         }
-                    }, githubApiFail);
-                }).fail(githubApiFail);
+                    }, getGithubApiFail(window.location));
+                }).fail(getGithubApiFail(window.location));
             });
         </script>
     </head>
     
     <body>
         <div>
-            <div style="display: inline-block"><a href="https://github.com/awidesky?tab=repositories" class="plainLink"><h1>My repositories</h1></a></div>
+            <div style="display: inline-block; width: 100%;">
+                <a href="https://github.com/awidesky?tab=repositories" class="plainLink"><h1>My repositories</h1></a>
+                <button onclick="location.href = 'TODO.html';" class="TODObtn"><h3>Check TODOs</h3></button>
+            </div>
             <div id="loading"><h1><i>Loading...</i></h1></div>
             <div id="not_forked_repos"></div>
             <hr>
             <h2>Forked repositories</h2>
             <div id="forked_repos"></div>
         </div>
+        <hr>
+        <div id="TODOs"></div>
     </body>
     
 </html>

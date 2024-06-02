@@ -19,6 +19,12 @@
 
 .plainLink {
     text-decoration: none;
+    float: left;
+}
+
+.TODObtn {
+    background-color: goldenrod;
+    float: right;
 }
 
 .repo > * {

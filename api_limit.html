@@ -25,12 +25,13 @@
         }
     </style>
     <script>
+        console.log("Redirect location after limit reset : " + localStorage.getItem("redirectLocation"));
         var xhr = new XMLHttpRequest();
         xhr.open("HEAD", 'https://api.github.com/users/awidesky');
         xhr.onreadystatechange = () => {
                 if (xhr.readyState === xhr.HEADERS_RECEIVED) {
                     if(xhr.getResponseHeader("x-ratelimit-remaining") > 0) {
-                        window.location.href = 'repos.html';
+                        window.location.href = localStorage.getItem("redirectLocation") == null ? "repos.html" : localStorage.getItem("redirectLocation");
                     }
                     document.getElementById("requestLimit").textContent = xhr.getResponseHeader("x-ratelimit-limit");
                     const d = new Date(xhr.getResponseHeader('x-ratelimit-reset') * 1000);

@@ -1,0 +1,27 @@
+.TODOdiv {
+    margin: 10px;
+    display: block;
+    background-color: bisque;
+    border: solid 2px green;
+    border-radius: 8px;
+}
+
+.TODOdiv a {
+    margin: 5px;
+}
+
+.TODO {
+    margin: 5px;
+    background-color: greenyellow;
+    border: solid 2px green;
+    border-radius: 8px;
+}
+
+#loading h1 {
+    display: inline-block;
+    background-color: bisque;
+    color: blue;
+    padding: 10px;
+    border-radius: 15px;
+    margin-left: 5px;
+}
