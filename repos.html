@@ -36,15 +36,16 @@
                         const forked = data.filter(d => d.fork);
                         forked.sort(comp);
                         
-                        console.log("Not forked repos : " + not_forked.length + ", Forked repos : " + forked.length);
-
+                        //console.log("Not forked repos : " + not_forked.length + ", Forked repos : " + forked.length);
                         document.getElementById('loading').remove();
-                        for (let i in not_forked) {
+                        for (let i in not_forked) { //forEach로
                             const repoDiv = getRepoDiv(not_forked[i]);
                             readProjectJson(not_forked[i], repoDiv);
-                            TODO(not_forked[i], not_forked[i]['default_branch']);
+                            //TODO(not_forked[i], not_forked[i]['default_branch']);
+                            not_forked[i]['latest_branch'] = not_forked[i]['default_branch']
                             document.getElementById("not_forked_repos").appendChild(repoDiv);
                         }
+                        TODO(not_forked);
                         for (let i in forked) {
                             document.getElementById("forked_repos")
                                     .appendChild(getRepoDiv(forked[i]));
