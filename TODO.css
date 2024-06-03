@@ -5,22 +5,39 @@
     border: solid 2px green;
     border-radius: 8px;
 }
-
-.TODOdiv a {
-    margin: 5px;
+.TODOdiv ul {
+    margin-top: 0px;
+    margin-bottom: 10px;
 }
-
-.TODO {
+.TODOdiv li {
     margin: 5px;
     background-color: greenyellow;
     border: solid 2px green;
     border-radius: 8px;
 }
+.TODOdiv li * {
+    display: inline-block;
+    margin: 4px;
+    margin-right: 10px;
+}
+.TODOdiv li a {
+    background-color: yellow;
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.TODOdiv a h2 {
+    display: inline-block;
+    background-color: grey;
+    border-radius: 8px;
+    padding: 5px;
+    margin: 10px;
+}
 
 #loading h1 {
     display: inline-block;
     background-color: bisque;
-    color: blue;
+    color: greenyellow;
     padding: 10px;
     border-radius: 15px;
     margin-left: 5px;

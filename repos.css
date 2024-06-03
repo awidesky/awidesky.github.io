@@ -25,6 +25,7 @@
 .TODObtn {
     background-color: goldenrod;
     float: right;
+    border-radius: 15px;
 }
 
 .repo > * {

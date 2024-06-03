@@ -9,10 +9,14 @@
         <script src="TODO.js"></script>
         <script>
             $(document).ready(function () {
-                    const not_forked = JSON.parse(localStorage.getItem("nfRepos"));
-                    document.getElementById('loading').remove();
-                    TODO(not_forked);
-                });
+                const not_forked = JSON.parse(localStorage.getItem("nfRepos"));
+                document.getElementById('loading').remove();
+                TODO(not_forked);
+            });
+            function print() {
+                console.log("TODOList : " + JSON.stringify(TODOList, null, 4));
+                downloadObjectAsJson(TODOList);
+            }
         </script>
     </head>
     
@@ -20,6 +24,7 @@
         <div>
             <div style="display: inline-block;">
                 <h1>My TODO list</h1>
+                <button onclick="print()">printTodo</button>
             </div>
             <div id="loading"><h1><i>Loading...</i></h1></div>
             <div id="TODOs"></div>
