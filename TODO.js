@@ -24,9 +24,8 @@ function TODO(repos) {
             div.appendChild(title);
             const ul = document.createElement("ul");
             div.appendChild(ul);
-            parentDiv.appendChild(div);
             files.forEach((f) => {
-                findGithubFile(repo['name'], repo['latest_branch'], f.path, (raw) => {
+                findGithubFile(repo['name'], repo['latest_branch'], f.path, (raw) => { 
                     let list = [];
                     let i = 0;
                     let obj = {
@@ -35,36 +34,43 @@ function TODO(repos) {
                     let todos = raw.split('\n')
                         .forEach((s) => {
                             i++;
-                            //if (/(TODO) :/.test(s) != s.includes("TODO :")) alert(s);
+                            if (/(TODO) :/.test(s) != s.includes("TODO :")) alert(s);
                             if (TODORegex.test(s)) {
                                 s = s.substr(s.search(TODORegex));
                                 obj.line = i;
                                 obj.str = s;
                                 obj.link = "https://github.com/awidesky/" + repo['name'] + "/blob/" + repo['latest_branch'] + "/" + f.path + "#L" + obj.line;
                                 list.push(obj);
+                                console.log("pushing : " + JSON.stringify(obj));
                             }
                         });
 
                     if(list.length == 0) return;
+                    if(ul.childElementCount == 0) parentDiv.appendChild(div);
 
-                    list.forEach((l) => {
-                        TODOList.push({ 'name': repo['name'], 'list': list });
+                    let exist = {};
+                    list.filter((item) => exist.hasOwnProperty(item.line) ? false : (exist[item.line] = true))
+                    //list.filter((item, pos, self) => self.indexOf(item) == pos)
+                        .forEach((l) => {
+                            TODOList.push({ 'name': repo['name'], 'list': list });
 
-                        const li = document.createElement("li");
-                        const a = document.createElement("a");
-                        a.href = l.link;
-                        a.textContent = "line " + l.line + " of " + l.filename;
-                        li.appendChild(a);
-                        const p = document.createElement("p");
-                        p.textContent = l.str;
-                        //아니면 li.innerHTML += l.str;
-                        li.appendChild(p);
-                        ul.appendChild(li);
-                        console.log(a);
-                        console.log(p);
-                        console.log(li);
-                        console.log(ul);
-                    });
+                            const li = document.createElement("li");
+                            const a = document.createElement("a");
+                            a.href = l.link;
+                            a.textContent = "line " + l.line + " of " + l.filename;
+                            li.appendChild(a);
+                            const p = document.createElement("p");
+                            p.textContent = l.str;
+                            //아니면 li.innerHTML += l.str;
+                            li.appendChild(p);
+                            ul.appendChild(li);
+                            /*
+                            console.log(a);
+                            console.log(p);
+                            console.log(li);
+                            console.log(ul);
+                            */
+                        });
                 });
             });
         }).fail(getGithubApiFail(window.location));
