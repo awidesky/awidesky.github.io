@@ -20,6 +20,24 @@
     margin: 4px;
     margin-right: 10px;
 }
+.TODOdiv li .tooltiptext {
+    visibility: hidden;
+    /*width: 120px;*/
+    display: block;
+    background-color: black;
+    color: #fff;
+    font-family: monospace;
+    text-align: left;
+    border-radius: 8px;
+    padding: 1em 1em;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+.TODOdiv li:hover .tooltiptext {
+    visibility: visible;
+}
 .TODOdiv li a {
     background-color: yellow;
     padding: 3px;
@@ -42,3 +60,12 @@
     border-radius: 15px;
     margin-left: 5px;
 }
+
+
+/*
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+*/

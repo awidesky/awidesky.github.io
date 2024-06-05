@@ -21,15 +21,19 @@ function findGithubFile(repo, branch, file, callback) {
      But we cannot suppress 404 error logs in browser.
      see : https://stackoverflow.com/questions/44019776/fetch-api-chrome-and-404-errors
     */
-    fetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
-        .then(function (response) {
+    return fetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
+        .then((response) => {
             if (response.ok) {
                 //alert(response.header.get("content-type"));
-                response.text().then((t) => {
-                    callback(t);
-                });
+                return response.text();
+            } else {
+                alert("findGithubFile Fail!");
+                console.log("findGithubFile Fail!");
+                console.log(JSON.stringify(response, null, 4));
+                return Promise.resolve("");
             }
-        });
+        })
+        .then((t) => callback(t));
 }
 
 function downloadObjectAsJson(exportObj, exportName) {

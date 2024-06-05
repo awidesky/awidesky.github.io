@@ -6,6 +6,7 @@
         <link href="TODO.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="commons.js"></script>
+        <script src="lz-string.min.js"></script>
         <script src="TODO.js"></script>
         <script>
             $(document).ready(function () {
@@ -15,6 +16,8 @@
             });
             function print() {
                 console.log("TODOList : " + JSON.stringify(TODOList, null, 4));
+                console.log("unzipped size : " + JSON.stringify(TODOList).length);
+                console.log("zipped size : " + LZString.compress(JSON.stringify(TODOList)).length);
                 downloadObjectAsJson(TODOList);
             }
         </script>
