@@ -14,7 +14,7 @@ function getGithubAPI(query, callback) {
             .fail(getGithubApiFail(window.location));
 }
 
-function findGithubFile(repo, branch, file, callback) {
+function findGithubFile(repo, branch, file, callback = (t) => t) {
     /*
      Fetch file's content if exist.
      Even though it does not exist, that's not a problem.
