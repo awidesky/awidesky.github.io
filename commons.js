@@ -27,9 +27,6 @@ function findGithubFile(repo, branch, file, callback) {
                 //alert(response.header.get("content-type"));
                 return response.text();
             } else {
-                alert("findGithubFile Fail!");
-                console.log("findGithubFile Fail!");
-                console.log(JSON.stringify(response, null, 4));
                 return Promise.resolve("");
             }
         })
