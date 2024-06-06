@@ -15,17 +15,15 @@
                     let i = 1;
                     while(r_num > 0) {
                         promises.push($.getJSON('https://api.github.com/users/awidesky/repos?per_page=100&page=' + i));
-                        /*
-                        promises[promises.length - 1] = promises[promises.length - 1].then((d,t,jqXHR) => {
-                             console.log("Remaining api call limit : " + jqXHRs.getResponseHeader("x-ratelimit-remaining")
-                                            + ", next limit reset at : " + jqXHRs.getResponseHeader("x-ratelimit-reset");
-                            return d;
-
-                        });
-                        */
                         i++;
                         r_num -= 100;
                     }
+                    promises[promises.length - 1].then((d, s, jqXHR) => {
+                        console.log("Remaining api call limit : " + jqXHR.getResponseHeader("x-ratelimit-remaining")
+                            + ", next limit reset at : " + new Date(jqXHR.getResponseHeader('x-ratelimit-reset') * 1000).toString());
+                        return d;
+                    });
+
                     $.when.apply($, promises).then(function(data) {
                         data = [].concat(...data)
                         const comp = (r1, r2) => {
