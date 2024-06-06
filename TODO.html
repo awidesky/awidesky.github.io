@@ -16,8 +16,14 @@
             });
             function print() {
                 console.log("TODOList : " + JSON.stringify(TODOList, null, 4));
-                console.log("unzipped size : " + JSON.stringify(TODOList).length);
-                console.log("zipped size : " + LZString.compress(JSON.stringify(TODOList)).length);
+                let t1 = performance.now();
+                const un = JSON.stringify(TODOList);
+                t1 = performance.now() - t1;
+                console.log("unzipped size : " + un.length + ", time : " + t1);
+                t1 = performance.now();
+                const zi = LZString.compress(JSON.stringify(TODOList));
+                t1 = performance.now() - t1;
+                console.log("zipped size : " + zi.length + ", time : " + t1);
                 downloadObjectAsJson(TODOList);
             }
         </script>
