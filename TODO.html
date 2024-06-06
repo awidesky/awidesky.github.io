@@ -5,12 +5,12 @@
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link href="TODO.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="commons.js"></script>
-        <script src="lz-string.min.js"></script>
-        <script src="TODO.js"></script>
+        <script src="commons.js" charset="utf-8"></script>
+        <script src="lz-string.min.js" charset="utf-8"></script>
+        <script src="TODO.js" charset="utf-8"></script>
         <script>
             $(document).ready(function () {
-                const not_forked = JSON.parse(localStorage.getItem("nfRepos"));
+                const not_forked = JSON.parse(LZString.decompress(localStorage.getItem("nfRepos")));
                 document.getElementById('loading').remove();
                 TODO(not_forked);
             });

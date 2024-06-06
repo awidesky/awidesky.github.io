@@ -5,8 +5,9 @@
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link href="repos.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="commons.js"></script>
-        <script src="repos.js"></script>
+        <script src="lz-string.min.js" charset="utf-8"></script>
+        <script src="commons.js" charset="utf-8"></script>
+        <script src="repos.js" charset="utf-8"></script>
         <script>
             $(document).ready(function () {
                 $.getJSON('https://api.github.com/users/awidesky', (user) => {
@@ -44,11 +45,9 @@
                             not_forked[i]['latest_branch'] = not_forked[i]['default_branch']
                             document.getElementById("not_forked_repos").appendChild(repoDiv);
                         }
-                        localStorage.setItem("nfRepos", JSON.stringify(not_forked));
-                        //TODO(not_forked);
+                        localStorage.setItem("nfRepos", LZString.compress(JSON.stringify(not_forked))); //이거 크기가?
                         for (let i in forked) {
-                            document.getElementById("forked_repos")
-                                    .appendChild(getRepoDiv(forked[i]));
+                            document.getElementById("forked_repos").appendChild(getRepoDiv(forked[i]));
                         }
                     }, getGithubApiFail(window.location));
                 }).fail(getGithubApiFail(window.location));
