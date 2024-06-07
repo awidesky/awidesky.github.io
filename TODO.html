@@ -11,6 +11,7 @@
         <script>
             $(document).ready(function () {
                 const not_forked = JSON.parse(LZString.decompress(localStorage.getItem("nfRepos")));
+                //TODO : nfRepos없으면 repos로 redirect
                 document.getElementById('loading').remove();
                 TODO(not_forked);
             });
