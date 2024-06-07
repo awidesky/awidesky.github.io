@@ -15,18 +15,6 @@
                 document.getElementById('loading').remove();
                 TODO(not_forked);
             });
-            function print() {
-                console.log("TODOList : " + JSON.stringify(TODOList, null, 4));
-                let t1 = performance.now();
-                const un = JSON.stringify(TODOList);
-                t1 = performance.now() - t1;
-                console.log("unzipped size : " + un.length + ", time : " + t1);
-                t1 = performance.now();
-                const zi = LZString.compress(JSON.stringify(TODOList));
-                t1 = performance.now() - t1;
-                console.log("zipped size : " + zi.length + ", time : " + t1);
-                downloadObjectAsJson(TODOList, "TODOList");
-            }
         </script>
     </head>
     
@@ -34,7 +22,6 @@
         <div>
             <div style="display: inline-block;">
                 <h1>My TODO list</h1>
-                <button onclick="print()">printTodo</button>
             </div>
             <div id="loading"><h1><i>Loading...</i></h1></div>
             <div id="TODOs"></div>
