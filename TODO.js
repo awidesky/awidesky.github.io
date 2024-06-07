@@ -3,7 +3,6 @@ let TODOUpdateTime = new Date((localStorage.hasOwnProperty("TODOUpdateTime")) ? 
 let TODOList = [];
 function TODO(repos) {
     if(localStorage.hasOwnProperty("TODOList")) downloadObjectAsJson(JSON.parse(LZString.decompress(localStorage.getItem("TODOList"))), "TODOList_Cached");
-    //let promiseList = [];
     const TODORegex = /TODO\s*:/;
     const now = new Date();
     localStorage.setItem("TODOUpdateTime", now.toString());
@@ -69,7 +68,6 @@ function TODO(repos) {
 
                 let exist = {};
                 list = list.filter((item) => exist.hasOwnProperty(item.l) ? false : (exist[item.l] = true));
-                //console.log("list : " + JSON.stringify(list, null, 4));
                 return list;
             })));
             //console.log("promiseList \"" + promiseList + "\", type : " + Object.prototype.toString.call(promiseList[0]));
@@ -98,7 +96,8 @@ function TODO(repos) {
             });
         });
     })).then((...TODOList) => {
-        TODOList = [].concat(...TODOList.filter(Array.isArray))
+        //TODOList = [].concat(...TODOList.filter(Array.isArray))//이게 문제다
+        TODOList = TODOList.filter(t => t != null);
         console.log("TODOList : " + JSON.stringify(TODOList, null, 4));
         let t1 = performance.now();
         const un = JSON.stringify(TODOList);

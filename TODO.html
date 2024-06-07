@@ -24,7 +24,7 @@
                 const zi = LZString.compress(JSON.stringify(TODOList));
                 t1 = performance.now() - t1;
                 console.log("zipped size : " + zi.length + ", time : " + t1);
-                downloadObjectAsJson(TODOList);
+                downloadObjectAsJson(TODOList, "TODOList");
             }
         </script>
     </head>
