@@ -11,22 +11,19 @@
         <script src="js/repos.js" charset="utf-8"></script>
         <script>
             $(document).ready(function () {
-                $.getJSON('https://api.github.com/users/awidesky', (user) => {
+                getGithubAPI("users/awidesky", user => {
                     let r_num = user.public_repos;
                     var promises = [];
                     let i = 1;
                     while(r_num > 0) {
-                        promises.push($.getJSON('https://api.github.com/users/awidesky/repos?per_page=100&page=' + i));
+                        promises.push(getGithubAPI('users/awidesky/repos?per_page=100&page=' + i));
                         i++;
                         r_num -= 100;
                     }
-                    promises[promises.length - 1].then((d, s, jqXHR) => {
-                        console.log("Remaining api call limit : " + jqXHR.getResponseHeader("x-ratelimit-remaining")
-                            + ", next limit reset at : " + new Date(jqXHR.getResponseHeader('x-ratelimit-reset') * 1000).toString());
-                        return d;
-                    });
 
                     $.when.apply($, promises).then(function(data) {
+                        console.log("Remaining api call limit : " + localStorage.getItem("x-ratelimit-remaining")
+                                     + ", next limit reset at : " + new Date(localStorage.getItem('x-ratelimit-reset') * 1000).toString());
                         data = [].concat(...data)
                         const comp = (r1, r2) => {
                             d1 = new Date(r1.pushed_at);
@@ -49,8 +46,8 @@
                         for (let i in forked) {
                             document.getElementById("forked_repos").appendChild(getRepoDiv(forked[i]));
                         }
-                    }, getGithubApiFail(window.location));
-                }).fail(getGithubApiFail(window.location));
+                    });
+                });
             });
         </script>
     </head>

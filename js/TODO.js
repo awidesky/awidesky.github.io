@@ -13,9 +13,8 @@ function TODO(repos) {
     $.when.apply($, repos.map((repo) => {
         const pushedAt = new Date(repo.pushed_at);
         if (pushedAt <= TODOUpdateTime) return null;
-        //TODO : console.log("fetching " + repo.name + " since pushedAt is " + pushedAt.toString() + " and TODOUpdateTime is " + TODOUpdateTime);
         //완성되면 getGithubAPI 쓰기
-        return $.getJSON("https://api.github.com/repos/awidesky/" + repo['name'] + "/git/trees/" + repo['latest_branch'] + "?recursive=1").then((files) => {
+        return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['latest_branch'] + "?recursive=1").then((files) => {
             files = files.tree.filter((f) => f.type == "blob").filter(testSourceFile); //only check "blob"(file), not "tree"(directory).
             if(files.length == 0) return;
             const promiseList = [];
@@ -112,21 +111,20 @@ function TODO(repos) {
             localStorage.setItem("TODOUpdateTime", now.toString());
         });
         localStorage.setItem("TODOList", LZString.compress(JSON.stringify(TODOList)));
-    }, getGithubApiFail(window.location));
+    });
 }
 
 function resetTODO() {
-    checkRESTAPIlimit((rem, lim, res) => {
-        if(window.confirm("There are " + rem + " available request left from your " + lim + " per hour limit.\n"
-            + "After exeeding the limit, you'll have to wait until " + new Date(res * 1000).toString().substring(0, 24)
-            + "\nAre you sure you want to research all repos for TODOs?\n"
-            + "It'll take around " + reposLength + " requests or more.")) {
-                localStorage.removeItem("TODOUpdateTime");
-                localStorage.removeItem("TODOList");
-                location.reload();
-                //TODO : 원하는 기간 안으로 조정하는 옵션도 만들기
-        }
-    });
+    if (window.confirm("There are " + localStorage.getItem("x-ratelimit-remaining")
+        + " available request left from your " + localStorage.getItem("x-ratelimit-limit") + " per hour limit.\n"
+        + "After exeeding the limit, you'll have to wait until " + new Date(parseInt(localStorage.getItem("x-ratelimit-reset")) * 1000).toString().substring(0, 24)
+        + "\nAre you sure you want to research all repos for TODOs?\n"
+        + "It'll take around " + reposLength + " requests or more.")) {
+        localStorage.removeItem("TODOUpdateTime");
+        localStorage.removeItem("TODOList");
+        location.reload();
+        //TODO : 원하는 기간 안으로 조정하는 옵션도 만들기
+    }
 }
 
 function testSourceFile(f) {

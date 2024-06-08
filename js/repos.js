@@ -15,7 +15,7 @@ function getRepoDiv(repo) {
         const license = document.createElement("a");
         license.href = 'javascript:void(0);';
         license.onclick = () => {
-            $.getJSON(li.url, (data) => { //TODO : 요것도 깃헙 API로
+            $.getJSON(li.url, (data) => {
                 window.location.href = data.html_url;
             });
         };

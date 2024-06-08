@@ -2,15 +2,21 @@ function getGithubApiFail(redirectLocation) {
     return (xhr) => {
         if (xhr["responseText"].includes("API rate limit")) {
             localStorage.setItem("redirectLocation", redirectLocation);
-            window.location.href = '../api_limit.html';
+            window.location.href = 'api_limit.html';
         } else {
             alert(JSON.stringify(xhr, null, 4));
         }
     }
 }
 
-function getGithubAPI(query, callback) {
-    return $.getJSON('https://api.github.com/users/awidesky/' + query, callback)
+function getGithubAPI(query, callback = (d) => d) {
+    return $.getJSON('https://api.github.com/' + query, (d, s, jqXHR) => {
+                localStorage.setItem("x-ratelimit-remaining", jqXHR.getResponseHeader("x-ratelimit-remaining"));
+                localStorage.setItem("x-ratelimit-limit", jqXHR.getResponseHeader("x-ratelimit-limit"));
+                localStorage.setItem("x-ratelimit-reset", jqXHR.getResponseHeader("x-ratelimit-reset"));
+                return d;
+            })
+            .then(callback)
             .fail(getGithubApiFail(window.location));
 }
 
@@ -67,17 +73,4 @@ function getDateDiff(updatedAt, pushedAt) {
         ret += diff.getUTCSeconds() + "seconds ago";
     }
     return ret;
-}
-
-function checkRESTAPIlimit(callback) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("HEAD", 'https://api.github.com/users/awidesky');
-    xhr.onreadystatechange = () => {
-            if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-                callback(xhr.getResponseHeader("x-ratelimit-remaining"),
-                         xhr.getResponseHeader("x-ratelimit-limit"),
-                         xhr.getResponseHeader('x-ratelimit-reset'));
-            }
-        };
-    xhr.send();
 }
