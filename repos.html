@@ -45,7 +45,7 @@
                             not_forked[i]['latest_branch'] = not_forked[i]['default_branch']
                             document.getElementById("not_forked_repos").appendChild(repoDiv);
                         }
-                        localStorage.setItem("nfRepos", LZString.compress(JSON.stringify(not_forked))); //이거 크기가?
+                        localStorage.setItem("notForkedRepos", LZString.compress(JSON.stringify(not_forked)));
                         for (let i in forked) {
                             document.getElementById("forked_repos").appendChild(getRepoDiv(forked[i]));
                         }
