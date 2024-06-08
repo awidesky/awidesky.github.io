@@ -12,7 +12,6 @@
         <script>
             $(document).ready(function () {
                 getRepositories((not_forked) => {
-                    document.getElementById('loading').remove();
                     TODO(not_forked);
                 });
             });

@@ -81,6 +81,7 @@ function TODO(repos) {
             }
         });
 
+        document.getElementById('loading').remove();
         TODOList.forEach(t => {
             const div = document.createElement("div");
             div.classList.add("TODOdiv");
