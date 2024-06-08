@@ -2,7 +2,7 @@ function getGithubApiFail(redirectLocation) {
     return (xhr) => {
         if (xhr["responseText"].includes("API rate limit")) {
             localStorage.setItem("redirectLocation", redirectLocation);
-            window.location.href = 'api_limit.html';
+            window.location.href = '../api_limit.html';
         } else {
             alert(JSON.stringify(xhr, null, 4));
         }
