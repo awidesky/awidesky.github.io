@@ -16,14 +16,14 @@
                         + ", next limit reset at : " + new Date(localStorage.getItem('x-ratelimit-reset') * 1000).toString());
 
                     document.getElementById('loading').remove();
-                    for (let i in not_forked) { //TODO : forEach로
-                        const repoDiv = getRepoDiv(not_forked[i]);
-                        readProjectJson(not_forked[i], repoDiv);
+                    not_forked.forEach(f => {
+                        const repoDiv = getRepoDiv(f);
+                        readProjectJson(f, repoDiv);
                         document.getElementById("not_forked_repos").appendChild(repoDiv);
-                    }
-                    for (let i in forked) {
-                        document.getElementById("forked_repos").appendChild(getRepoDiv(forked[i]));
-                    }
+                    });
+                    forked.forEach(f => {
+                        document.getElementById("forked_repos").appendChild(getRepoDiv(f));
+                    });
                 });
             });
         </script>
