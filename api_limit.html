@@ -32,7 +32,9 @@
         xhr.onreadystatechange = () => {
             if (xhr.readyState === xhr.HEADERS_RECEIVED) {
                 if (xhr.getResponseHeader("x-ratelimit-remaining") > 0) {
-                    window.location.href = localStorage.hasOwnProperty("redirectLocation") ? localStorage.getItem("redirectLocation") : "repos.html";
+                    const redirect = localStorage.hasOwnProperty("redirectLocation") ? localStorage.getItem("redirectLocation") : "repos.html";
+                    localStorage.removeItem("redirectLocation");
+                    window.location.href = redirect;
                 }
                 document.getElementById("requestLimit").textContent = xhr.getResponseHeader("x-ratelimit-limit");
                 const d = new Date(parseInt(xhr.getResponseHeader('x-ratelimit-reset')) * 1000);
