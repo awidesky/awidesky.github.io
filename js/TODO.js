@@ -13,7 +13,6 @@ function TODO(repos) {
     $.when.apply($, repos.map((repo) => {
         const pushedAt = new Date(repo.pushed_at);
         if (pushedAt <= TODOUpdateTime) return null;
-        //완성되면 getGithubAPI 쓰기
         return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['latest_branch'] + "?recursive=1").then((files) => {
             files = files.tree.filter((f) => f.type == "blob").filter(testSourceFile); //only check "blob"(file), not "tree"(directory).
             if(files.length == 0) return;
