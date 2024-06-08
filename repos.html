@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>awidesky.repos</title>
+        <meta charset="UTF-8">
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link href="css/repos.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -38,7 +39,7 @@
                         forked.sort(comp);
                         
                         document.getElementById('loading').remove();
-                        for (let i in not_forked) { //forEach로
+                        for (let i in not_forked) { //TODO : forEach로
                             const repoDiv = getRepoDiv(not_forked[i]);
                             readProjectJson(not_forked[i], repoDiv);
                             not_forked[i]['latest_branch'] = not_forked[i]['default_branch']
