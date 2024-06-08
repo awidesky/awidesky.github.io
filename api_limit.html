@@ -4,6 +4,7 @@
 <head>
     <title>awidesky.github.io</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <script src="commons.js" charset="utf-8"></script>
     <style>
         * {
             font-family: sans-serif
@@ -26,21 +27,16 @@
     </style>
     <script>
         console.log("Redirect location after limit reset : " + localStorage.getItem("redirectLocation"));
-        var xhr = new XMLHttpRequest();
-        xhr.open("HEAD", 'https://api.github.com/users/awidesky');
-        xhr.onreadystatechange = () => {
-                if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-                    if(xhr.getResponseHeader("x-ratelimit-remaining") > 0) {
-                        window.location.href = localStorage.getItem("redirectLocation") == null ? "repos.html" : localStorage.getItem("redirectLocation");
-                    }
-                    document.getElementById("requestLimit").textContent = xhr.getResponseHeader("x-ratelimit-limit");
-                    const d = new Date(xhr.getResponseHeader('x-ratelimit-reset') * 1000);
-                    const now = new Date();
-                    document.getElementById("resetTime").innerHTML = "<u>" + d.toTimeString().split(' ')[0].substring(0, 5)
-                                        + "</u>(in " + ((d.getHours() - now.getHours() > 0 ? 60 : 0) + d.getMinutes() - now.getMinutes()) + " minutes).";
-                }
-            };
-        xhr.send();
+        checkRESTAPIlimit((rem, lim, res) => {
+            if (rem > 0) {
+                window.location.href = localStorage.getItem("redirectLocation") == null ? "repos.html" : localStorage.getItem("redirectLocation");
+            }
+            document.getElementById("requestLimit").textContent = lim;
+            const d = new Date(res * 1000);
+            const now = new Date();
+            document.getElementById("resetTime").innerHTML = "<u>" + d.toTimeString().split(' ')[0].substring(0, 5)
+                + "</u>(in " + ((d.getHours() - now.getHours() > 0 ? 60 : 0) + d.getMinutes() - now.getMinutes()) + " minutes).";
+        });
     </script>
     </head>
 

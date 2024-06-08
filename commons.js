@@ -69,3 +69,15 @@ function getDateDiff(updatedAt, pushedAt) {
     return ret;
 }
 
+function checkRESTAPIlimit(callback) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("HEAD", 'https://api.github.com/users/awidesky');
+    xhr.onreadystatechange = () => {
+            if (xhr.readyState === xhr.HEADERS_RECEIVED) {
+                callback(xhr.getResponseHeader("x-ratelimit-remaining"),
+                         xhr.getResponseHeader("x-ratelimit-limit"),
+                         xhr.getResponseHeader('x-ratelimit-reset'));
+            }
+        };
+    xhr.send();
+}
