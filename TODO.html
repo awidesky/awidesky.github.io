@@ -11,10 +11,10 @@
         <script src="js/TODO.js" charset="utf-8"></script>
         <script>
             $(document).ready(function () {
-                if(!localStorage.hasOwnProperty("notForkedRepos")) location.href = 'repos.html'; 
-                const not_forked = JSON.parse(LZString.decompress(localStorage.getItem("notForkedRepos")));
-                document.getElementById('loading').remove();
-                TODO(not_forked);
+                getRepositories((not_forked) => {
+                    document.getElementById('loading').remove();
+                    TODO(not_forked);
+                });
             });
         </script>
     </head>

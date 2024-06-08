@@ -11,42 +11,19 @@
         <script src="js/repos.js" charset="utf-8"></script>
         <script>
             $(document).ready(function () {
-                getGithubAPI("users/awidesky", user => {
-                    let r_num = user.public_repos;
-                    var promises = [];
-                    let i = 1;
-                    while(r_num > 0) {
-                        promises.push(getGithubAPI('users/awidesky/repos?per_page=100&page=' + i));
-                        i++;
-                        r_num -= 100;
-                    }
+                getRepositories((not_forked, forked) => {
+                    console.log("Remaining api call limit : " + localStorage.getItem("x-ratelimit-remaining")
+                        + ", next limit reset at : " + new Date(localStorage.getItem('x-ratelimit-reset') * 1000).toString());
 
-                    $.when.apply($, promises).then(function(data) {
-                        console.log("Remaining api call limit : " + localStorage.getItem("x-ratelimit-remaining")
-                                     + ", next limit reset at : " + new Date(localStorage.getItem('x-ratelimit-reset') * 1000).toString());
-                        data = [].concat(...data)
-                        const comp = (r1, r2) => {
-                            d1 = new Date(r1.pushed_at);
-                            d2 = new Date(r2.pushed_at);
-                            return d1 < d2 ? 1 : (d1 > d2 ? -1 : 0);
-                        }
-                        const not_forked = data.filter(d => !d.fork);
-                        not_forked.sort(comp);
-                        const forked = data.filter(d => d.fork);
-                        forked.sort(comp);
-                        
-                        document.getElementById('loading').remove();
-                        for (let i in not_forked) { //TODO : forEach로
-                            const repoDiv = getRepoDiv(not_forked[i]);
-                            readProjectJson(not_forked[i], repoDiv);
-                            not_forked[i]['latest_branch'] = not_forked[i]['default_branch']
-                            document.getElementById("not_forked_repos").appendChild(repoDiv);
-                        }
-                        localStorage.setItem("notForkedRepos", LZString.compress(JSON.stringify(not_forked)));
-                        for (let i in forked) {
-                            document.getElementById("forked_repos").appendChild(getRepoDiv(forked[i]));
-                        }
-                    });
+                    document.getElementById('loading').remove();
+                    for (let i in not_forked) { //TODO : forEach로
+                        const repoDiv = getRepoDiv(not_forked[i]);
+                        readProjectJson(not_forked[i], repoDiv);
+                        document.getElementById("not_forked_repos").appendChild(repoDiv);
+                    }
+                    for (let i in forked) {
+                        document.getElementById("forked_repos").appendChild(getRepoDiv(forked[i]));
+                    }
                 });
             });
         </script>

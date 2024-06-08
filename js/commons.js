@@ -39,6 +39,37 @@ function findGithubFile(repo, branch, file, callback = (t) => t) {
         .then((t) => callback(t));
 }
 
+function getRepositories(callback) {
+    getGithubAPI("users/awidesky", user => {
+        let r_num = user.public_repos;
+        var promises = [];
+        let i = 1;
+        while(r_num > 0) {
+            promises.push(getGithubAPI('users/awidesky/repos?per_page=100&page=' + i));
+            i++;
+            r_num -= 100;
+        }
+
+        $.when.apply($, promises).then(function(data) {
+            data = [].concat(...data)
+            const comp = (r1, r2) => {
+                d1 = new Date(r1.pushed_at);
+                d2 = new Date(r2.pushed_at);
+                return d1 < d2 ? 1 : (d1 > d2 ? -1 : 0);
+            }
+            const not_forked = data.filter(d => !d.fork);
+            not_forked.sort(comp);
+            not_forked.forEach(repo => {
+                repo['latest_branch'] = repo['default_branch'];
+            });
+            const forked = data.filter(d => d.fork);
+            forked.sort(comp);
+
+            callback(not_forked, forked);
+        });
+    });
+}
+
 function downloadObjectAsJson(exportObj, exportName) {
     //for debug
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 4));
