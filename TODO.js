@@ -13,7 +13,7 @@ function TODO(repos) {
     $.when.apply($, repos.map((repo) => {
         const pushedAt = new Date(repo.pushed_at);
         if (pushedAt <= TODOUpdateTime) return null;
-        console.log("fetching " + repo.name + " since pushedAt is " + pushedAt.toString() + " and TODOUpdateTime is " + TODOUpdateTime);
+        //TODO : console.log("fetching " + repo.name + " since pushedAt is " + pushedAt.toString() + " and TODOUpdateTime is " + TODOUpdateTime);
         //완성되면 getGithubAPI 쓰기
         return $.getJSON("https://api.github.com/repos/awidesky/" + repo['name'] + "/git/trees/" + repo['latest_branch'] + "?recursive=1").then((files) => {
             files = files.tree.filter((f) => f.type == "blob").filter(testSourceFile); //only check "blob"(file), not "tree"(directory).
@@ -51,9 +51,9 @@ function TODO(repos) {
                         if (ct > 4) break;
                     }
                     const indentCorrectedList = trimLeadingWS(surrounding.join("\n"));
-                    console.log(indentCorrectedList); //TODO
+                    console.log(indentCorrectedList); //TODO : 이거 지우기
                     indentCorrectedList[indexOfS] = "<span style='color:yellow;'>" + indentCorrectedList[indexOfS] + "</span>";
-                    const surroundingStr = indentCorrectedList.join("<br>").replace(/[\r\n]/g, "");
+                    const surroundingStr = indentCorrectedList.filter(s => s.length != 0).join("<br>").replace(/[\r\n]/g, "");
                     s = s.substr(s.search(TODORegex));
                     obj.l = i;
                     obj.s = s;
@@ -66,7 +66,6 @@ function TODO(repos) {
                 list = list.filter((item) => exist.hasOwnProperty(item.l) ? false : (exist[item.l] = true));
                 return list;
             })));
-            //console.log("promiseList \"" + promiseList + "\", type : " + Object.prototype.toString.call(promiseList[0]));
             return $.when.apply($, promiseList).then((...list) => {
                 list = [].concat(...list.filter(Array.isArray))
                 if (list.length == 0) return null;
