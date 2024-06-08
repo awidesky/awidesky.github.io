@@ -20,8 +20,9 @@
     
     <body>
         <div>
-            <div style="display: inline-block;">
-                <h1>My TODO list</h1>
+            <div style="display: inline-block; width: 100%;"> <!--이거 필요없음. 안에것들이 inline-block이여야 한다.-->
+                <h1 style="float:left;">My TODO list</h1>
+                <button onclick="resetTODO()" class="resetbtn"><h3>Reset TODO List</h3></button>
             </div>
             <div id="loading"><h1><i>Loading...</i></h1></div>
             <div id="TODOs"></div>
