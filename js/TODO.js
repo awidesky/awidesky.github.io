@@ -51,7 +51,6 @@ function TODO(repos) {
                         if (ct > 4) break;
                     }
                     const indentCorrectedList = trimLeadingWS(surrounding.join("\n"));
-                    console.log(indentCorrectedList); //TODO : 이거 지우기
                     indentCorrectedList[indexOfS] = "<span style='color:yellow;'>" + indentCorrectedList[indexOfS] + "</span>";
                     const surroundingStr = indentCorrectedList.filter(s => s.length != 0).join("<br>").replace(/[\r\n]/g, "");
                     s = s.substr(s.search(TODORegex));

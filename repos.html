@@ -37,7 +37,6 @@
                         const forked = data.filter(d => d.fork);
                         forked.sort(comp);
                         
-                        //TODO : console.log("Not forked repos : " + not_forked.length + ", Forked repos : " + forked.length);
                         document.getElementById('loading').remove();
                         for (let i in not_forked) { //forEach로
                             const repoDiv = getRepoDiv(not_forked[i]);
