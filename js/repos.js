@@ -53,14 +53,6 @@ function getRepoDiv(repo) {
     div.appendChild(updatedAt);
 
     
-    /* Example of myproject.json
-     {
-        "release": false,
-        "mavenLib": true,
-        "dev_branch": "dev"
-     }
-     */
-
     if (repo["mavenLib"]) {
         //denote that it's a maven library project
         const mavenCentral = "https://central.sonatype.com/artifact/io.github.awidesky/" + repo['name'];

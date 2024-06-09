@@ -62,11 +62,21 @@ function getRepositories(callback) {
             const forked = data.filter(d => d.fork);
             forked.sort(comp);
             
-            $.when.apply($, not_forked.map(repo => readProjectJson(repo))).then(() => { callback(not_forked, forked); });
+            $.when.apply($, not_forked.map(repo => readProjectJson(repo)))
+                .then(() => { callback(not_forked.filter(r => !r.hide), forked); });
         });
     });
 }
 
+
+/* Example of myproject.json
+ {
+    "release": false,
+    "mavenLib": true,
+    "dev_branch": "dev",
+    "hide": false
+ }
+ */
 function readProjectJson(repo) {
     //set default value of dev_branch property
     repo['dev_branch'] = repo['default_branch'];
