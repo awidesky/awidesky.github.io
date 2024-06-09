@@ -17,9 +17,7 @@
 
                     document.getElementById('loading').remove();
                     not_forked.forEach(f => {
-                        const repoDiv = getRepoDiv(f);
-                        readProjectJson(f, repoDiv);
-                        document.getElementById("not_forked_repos").appendChild(repoDiv);
+                        document.getElementById("not_forked_repos").appendChild(getRepoDiv(f));
                     });
                     forked.forEach(f => {
                         document.getElementById("forked_repos").appendChild(getRepoDiv(f));

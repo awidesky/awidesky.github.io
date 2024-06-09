@@ -46,6 +46,13 @@ function getRepoDiv(repo) {
         div.appendChild(desc);
     }
 
+    const updatedAt = document.createElement("p");
+    updatedAt.textContent = getDateDiff(repo['updated_at'], repo['pushed_at']);
+    updatedAt.classList.add("tag");
+    updatedAt.classList.add("updatedAt");
+    div.appendChild(updatedAt);
+
+    
     /* Example of myproject.json
      {
         "release": false,
@@ -69,12 +76,6 @@ function getRepoDiv(repo) {
         releaseLink.textContent = "release";
         div.appendChild(releaseLink);
     }
-    
-    const updatedAt = document.createElement("p");
-    updatedAt.textContent = getDateDiff(repo['updated_at'], repo['pushed_at']);
-    updatedAt.classList.add("tag");
-    updatedAt.classList.add("updatedAt");
-    div.appendChild(updatedAt);
 
     return div;
 }

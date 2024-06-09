@@ -50,7 +50,7 @@ function getRepositories(callback) {
             r_num -= 100;
         }
 
-        $.when.apply($, promises).then(function(data) {
+        $.when.apply($, promises).then(data => {
             data = [].concat(...data)
             const comp = (r1, r2) => {
                 d1 = new Date(r1.pushed_at);
@@ -59,19 +59,23 @@ function getRepositories(callback) {
             }
             const not_forked = data.filter(d => !d.fork);
             not_forked.sort(comp);
-            //여기서 readProjectJson
-            not_forked.forEach(repo => readProjectJson(repo));
             const forked = data.filter(d => d.fork);
             forked.sort(comp);
-
-            callback(not_forked, forked);
+            
+            $.when.apply($, not_forked.map(repo => readProjectJson(repo))).then(() => { callback(not_forked, forked); });
         });
     });
 }
 
 function readProjectJson(repo) {
     //if the last date that the repo is updated is before "myproject.json" was a thing, skip, obviously.
-    if (new Date(repo.pushed_at) < new Date("Sun Jun 09 2024 00:00:00 GMT+0900")) return;
+    if (new Date(repo.pushed_at) < new Date("Sun Jun 09 2024 00:00:00 GMT+0900")) {
+        //even though there are no myproject.json, check for .pom files just in case.
+        return findGithubFile(repo['name'], repo['default_branch'], "pom.xml", pom => {
+            //check if it's deployed to maven central or not
+            repo["mavenLib"] = pom != null && pom.includes("<artifactId>nexus-staging-maven-plugin</artifactId>");
+        });
+    }
 
     repo['dev_branch'] = repo['default_branch'];
     function findLatestMyproject(mpjson) { //find myproject.json in latest dev branch, and process it.
@@ -85,8 +89,7 @@ function readProjectJson(repo) {
         for(let idx in mpjson) repo[idx] = mpjson[idx];
     }
 
-    findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
-
+    return findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
 }
 
 
