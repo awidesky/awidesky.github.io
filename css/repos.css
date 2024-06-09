@@ -1,5 +1,6 @@
 .repo {
     margin: 5px;
+    padding: 3px;
     display: inline-block;
     vertical-align: top;
     background-color: bisque;
@@ -30,6 +31,11 @@
 
 .repo > * {
     margin: 5px;
+}
+
+.repo .title {
+    margin: 0px;
+    display: inline-flex;
 }
 
 .desc {
