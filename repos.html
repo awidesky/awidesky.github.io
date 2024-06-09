@@ -12,7 +12,7 @@
         <script>
             $(document).ready(function () {
                 getRepositories((not_forked, forked) => {
-                    console.log("Remaining api call limit : " + localStorage.getItem("x-ratelimit-remaining")
+                    console.log("Remaining GitHub REST api call limit : " + localStorage.getItem("x-ratelimit-remaining")
                         + ", next limit reset at : " + new Date(localStorage.getItem('x-ratelimit-reset') * 1000).toString());
 
                     document.getElementById('loading').remove();
@@ -41,8 +41,6 @@
             <h2>Forked repositories</h2>
             <div id="forked_repos"></div>
         </div>
-        <hr>
-        <div id="TODOs"></div>
     </body>
     
 </html>

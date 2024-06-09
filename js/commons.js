@@ -33,7 +33,7 @@ function findGithubFile(repo, branch, file, callback = (t) => t) {
                 //alert(response.header.get("content-type"));
                 return response.text();
             } else {
-                return Promise.resolve("");
+                return Promise.resolve(null);
             }
         })
         .then((t) => callback(t));
@@ -59,9 +59,8 @@ function getRepositories(callback) {
             }
             const not_forked = data.filter(d => !d.fork);
             not_forked.sort(comp);
-            not_forked.forEach(repo => {
-                repo['latest_branch'] = repo['default_branch'];
-            });
+            //여기서 readProjectJson
+            not_forked.forEach(repo => readProjectJson(repo));
             const forked = data.filter(d => d.fork);
             forked.sort(comp);
 
@@ -69,6 +68,27 @@ function getRepositories(callback) {
         });
     });
 }
+
+function readProjectJson(repo) {
+    //if the last date that the repo is updated is before "myproject.json" was a thing, skip, obviously.
+    if (new Date(repo.pushed_at) < new Date("Sun Jun 09 2024 00:00:00 GMT+0900")) return;
+
+    repo['dev_branch'] = repo['default_branch'];
+    function findLatestMyproject(mpjson) { //find myproject.json in latest dev branch, and process it.
+        if(mpjson == null) return;
+        mpjson = JSON.parse(mpjson);
+        if (repo['dev_branch'] != mpjson.dev_branch) {
+            repo['dev_branch'] = mpjson.dev_branch;
+            findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
+            return;
+        }
+        for(let idx in mpjson) repo[idx] = mpjson[idx];
+    }
+
+    findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
+
+}
+
 
 function downloadObjectAsJson(exportObj, exportName) {
     //for debug

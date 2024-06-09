@@ -11,13 +11,14 @@ function TODO(repos) {
     const now = new Date();
     const parentDiv = document.getElementById("TODOs");
     $.when.apply($, repos.map((repo) => {
-        const pushedAt = new Date(repo.pushed_at);
+        let pushedAt = new Date(repo.pushed_at);
+        pushedAt.setTime(pushedAt.getTime() + (60 * 60 * 1000));
         if (pushedAt <= TODOUpdateTime) return null;
-        return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['latest_branch'] + "?recursive=1").then((files) => {
+        return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['dev_branch'] + "?recursive=1").then((files) => {
             files = files.tree.filter((f) => f.type == "blob").filter(testSourceFile); //only check "blob"(file), not "tree"(directory).
             if(files.length == 0) return;
             const promiseList = [];
-            files.forEach((f) => promiseList.push(findGithubFile(repo['name'], repo['latest_branch'], f.path).then((raw) => {  //잘 되면 이거 그냥 안으로 넣어버리기?
+            files.forEach((f) => promiseList.push(findGithubFile(repo['name'], repo['dev_branch'], f.path).then((raw) => {  //잘 되면 이거 그냥 안으로 넣어버리기?
                 let list = [];
                 let i = 0;
                 let obj = {
@@ -55,7 +56,7 @@ function TODO(repos) {
                     obj.l = i;
                     obj.s = s;
                     obj.c = surroundingStr;
-                    obj.li = "https://github.com/awidesky/" + repo['name'] + "/blob/" + repo['latest_branch'] + "/" + f.path + "#L" + obj.l;
+                    obj.li = "https://github.com/awidesky/" + repo['name'] + "/blob/" + repo['dev_branch'] + "/" + f.path + "#L" + obj.l;
                     list.push(obj);
                 });
 
