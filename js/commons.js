@@ -68,6 +68,9 @@ function getRepositories(callback) {
 }
 
 function readProjectJson(repo) {
+    //set default value of dev_branch property
+    repo['dev_branch'] = repo['default_branch'];
+
     //if the last date that the repo is updated is before "myproject.json" was a thing, skip, obviously.
     if (new Date(repo.pushed_at) < new Date("Sun Jun 09 2024 00:00:00 GMT+0900")) {
         //even though there are no myproject.json, check for .pom files just in case.
@@ -77,7 +80,6 @@ function readProjectJson(repo) {
         });
     }
 
-    repo['dev_branch'] = repo['default_branch'];
     function findLatestMyproject(mpjson) { //find myproject.json in latest dev branch, and process it.
         if(mpjson == null) return;
         mpjson = JSON.parse(mpjson);
