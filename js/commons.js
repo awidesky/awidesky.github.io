@@ -83,6 +83,16 @@ function readProjectJson(repo) {
 
     //if the last date that the repo is updated is before "myproject.json" was a thing, skip, obviously.
     if (new Date(repo.pushed_at) < new Date("Sun Jun 09 2024 00:00:00 GMT+0900")) {
+        /*
+        Here I use a temporary hardcoded list repository names that are maven projects, but not contains myproject.json yet.
+        For now, only "GUIUtil" does not have one, because it is currently under heavy refactoring.
+        After refactoring project & adding myproject.json, this temporary logic can be deleted.
+        TODO : remove this after adding myproject.json in GUIUtil
+        Note - check that TODO line out in https://awidesky.github.io/TODO.html
+         */
+        const mavenrepolist = ["GUIUtil"];
+        if(mavenrepolist.find(m => repo['name'] == m) == undefined) return Promise.resolve(null);
+
         //even though there are no myproject.json, check for .pom files just in case.
         return findGithubFile(repo['name'], repo['default_branch'], "pom.xml", pom => {
             //check if it's deployed to maven central or not
