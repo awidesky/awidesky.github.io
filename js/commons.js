@@ -101,14 +101,15 @@ function readProjectJson(repo) {
     }
 
     function findLatestMyproject(mpjson) { //find myproject.json in latest dev branch, and process it.
-        if(mpjson == null) return;
+        if(mpjson == null) return Promise.resolve(null);
         mpjson = JSON.parse(mpjson);
         if (repo['dev_branch'] != mpjson.dev_branch) {
             repo['dev_branch'] = mpjson.dev_branch;
-            findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
-            return;
+            return findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
         }
         for(let idx in mpjson) repo[idx] = mpjson[idx];
+
+        return Promise.resolve(repo); //return a valid value, but it's not used(see getRepositories()).
     }
 
     return findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
