@@ -116,11 +116,12 @@ function TODO(repos) {
 }
 
 function resetTODO() {
-    if (window.confirm("There are " + localStorage.getItem("x-ratelimit-remaining")
+    if (window.confirm("This will delete all cached TODO data, and reload all repository info via GitHub api request.\n"
+        + "There are " + localStorage.getItem("x-ratelimit-remaining")
         + " available request left from your " + localStorage.getItem("x-ratelimit-limit") + " per hour limit.\n"
-        + "After exeeding the limit, you'll have to wait until " + new Date(parseInt(localStorage.getItem("x-ratelimit-reset")) * 1000).toString().substring(0, 24)
-        + "\nAre you sure you want to research all repos for TODOs?\n"
-        + "It'll take around " + (reposLength + 2) + " requests or more.")) {
+        + "After exeeding the limit, you'll have to wait until " + new Date(parseInt(localStorage.getItem("x-ratelimit-reset")) * 1000).toTimeString().split(' ')[0].substring(0, 5)
+        + ".\nAre you sure you want to re-search all for TODO?\n"
+        + "It'll take about " + (reposLength + 2) + " requests or more.")) {
         localStorage.removeItem("TODOUpdateTime");
         localStorage.removeItem("TODOList");
         location.reload();
