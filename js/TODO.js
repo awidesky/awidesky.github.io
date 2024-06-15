@@ -12,7 +12,7 @@ function TODO(repos) {
     const parentDiv = document.getElementById("TODOs");
     $.when.apply($, repos.map((repo) => {
         let pushedAt = new Date(repo.pushed_at);
-        pushedAt.setTime(pushedAt.getTime() + (60 * 60 * 1000));
+        pushedAt.setTime(pushedAt.getTime() + (60 * 1000));
         if (pushedAt <= TODOUpdateTime) return null;
         return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['dev_branch'] + "?recursive=1").then((files) => {
             files = files.tree.filter((f) => f.type == "blob").filter(testSourceFile); //only check "blob"(file), not "tree"(directory).
