@@ -41,6 +41,10 @@
                 const now = new Date();
                 document.getElementById("resetTime").innerHTML = "<u>" + d.toTimeString().split(' ')[0].substring(0, 5)
                     + "</u>(in " + ((d.getHours() - now.getHours() > 0 ? 60 : 0) + d.getMinutes() - now.getMinutes()) + " minutes).";
+
+                localStorage.setItem("x-ratelimit-remaining", xhr.getResponseHeader("x-ratelimit-remaining"));
+                localStorage.setItem("x-ratelimit-limit", xhr.getResponseHeader("x-ratelimit-limit"));
+                localStorage.setItem("x-ratelimit-reset", xhr.getResponseHeader("x-ratelimit-reset"));
             }
         };
         xhr.send();
