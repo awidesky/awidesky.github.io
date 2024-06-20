@@ -63,10 +63,10 @@ function getRepoDiv(repo) {
     };
 
     if (repo["release"]) {
-        const releaseLink = document.createElement("a");
-        releaseLink.href = repo['html_url'] + "/releases";
-        releaseLink.textContent = "release";
-        div.appendChild(releaseLink);
+        const releaseBtn = document.createElement("button");
+        releaseBtn.onclick = function () { window.open(repo['html_url'] + "/releases") };
+        releaseBtn.textContent = "release";
+        div.appendChild(releaseBtn);
     }
 
     return div;
