@@ -10,7 +10,7 @@ function TODO(repos) {
     const TODORegex = /TODO\s*:/;
     const now = new Date();
     const parentDiv = document.getElementById("TODOs");
-    $.when.apply($, repos.map((repo) => {
+    return $.when.apply($, repos.map((repo) => {
         let pushedAt = new Date(repo.pushed_at);
         pushedAt.setTime(pushedAt.getTime() + (60 * 1000));
         if (pushedAt <= TODOUpdateTime) return null;
@@ -104,9 +104,17 @@ function TODO(repos) {
                 p.textContent = l.s;
                 const tooltip = document.createElement("pre");
                 tooltip.classList.add("tooltiptext");
+                tooltip.classList.add("hidden");
                 tooltip.innerHTML = l.c;
                 li.appendChild(p);
                 li.appendChild(tooltip);
+                /* Mobile touch event instead of hover */
+                li.addEventListener('touchstart', () => {
+                    li.querySelector('.tooltiptext').classList.remove('hidden');
+                });
+                li.addEventListener('touchend', () => {
+                    li.querySelector('.tooltiptext').classList.add('hidden');
+                });
                 ul.appendChild(li);
             });
             localStorage.setItem("TODOUpdateTime", now.toString());

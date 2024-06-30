@@ -27,7 +27,6 @@
     margin-right: 10px;
 }
 .TODOdiv li .tooltiptext {
-    visibility: hidden;
     /*width: 120px;*/
     display: block;
     background-color: black;
@@ -41,9 +40,14 @@
     position: absolute;
     z-index: 1;
 }
+
+.hidden {
+    visibility: hidden;
+}
 .TODOdiv li:hover .tooltiptext {
     visibility: visible;
 }
+
 .TODOdiv li a {
     background-color: yellow;
     padding: 3px;
