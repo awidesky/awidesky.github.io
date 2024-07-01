@@ -40,7 +40,7 @@ function findGithubFile(repo, branch, file, callback = (t) => t) {
 }
 
 function getRepositories(callback) {
-    getGithubAPI("users/awidesky", user => {
+    return getGithubAPI("users/awidesky", user => {
         let r_num = user.public_repos;
         var promises = [];
         let i = 1;
@@ -50,7 +50,7 @@ function getRepositories(callback) {
             r_num -= 100;
         }
 
-        $.when.apply($, promises).then(data => {
+        return $.when.apply($, promises).then(data => {
             data = [].concat(...data)
             const comp = (r1, r2) => {
                 d1 = new Date(r1.pushed_at);
@@ -62,8 +62,8 @@ function getRepositories(callback) {
             const forked = data.filter(d => d.fork);
             forked.sort(comp);
             
-            $.when.apply($, not_forked.map(repo => readProjectJson(repo)))
-                .then(() => { callback(not_forked.filter(r => !r.hide), forked); });
+            return $.when.apply($, not_forked.map(repo => readProjectJson(repo)))
+                         .then(() => { callback(not_forked.filter(r => !r.hide), forked); });
         });
     });
 }
