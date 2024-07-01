@@ -50,7 +50,7 @@ function TODO(repos) {
                         if (ct > 4) break;
                     }
                     const indentCorrectedList = trimLeadingWS(surrounding.join("\n"));
-                    indentCorrectedList[indexOfS] = "<span style='color: yellow; font-size: 1em;'>" + indentCorrectedList[indexOfS] + "</span>";
+                    indentCorrectedList[indexOfS] = "<span class='highlightedcode'>" + indentCorrectedList[indexOfS] + "</span>";
                     const surroundingStr = indentCorrectedList.filter(s => s.length != 0).join("<br>").replace(/[\r\n]/g, "");
                     s = s.substr(s.search(TODORegex));
                     obj.l = i;
