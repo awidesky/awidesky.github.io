@@ -17,6 +17,7 @@
 }
 .TODOdiv li {
     margin: 5px;
+    position: relative;
     background-color: greenyellow;
     border: solid 2px green;
     border-radius: 8px;
@@ -27,7 +28,7 @@
     margin-right: 10px;
 }
 .TODOdiv li .tooltiptext {
-    max-width: 90%;
+    max-width: calc(100% - 34px);
     display: block;
     background-color: black;
     color: #fff;
