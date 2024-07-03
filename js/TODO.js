@@ -1,3 +1,9 @@
+// String.replaceAll polyfill : https://thewebdev.info/2021/08/13/how-to-fix-the-javascript-replaceall-is-not-a-function-error/
+if (typeof String.prototype.replaceAll == "undefined") {
+    String.prototype.replaceAll = function (match, replace) {
+        return this.replace(new RegExp(match, 'g'), () => replace);
+    }
+}
 
 let TODOUpdateTime = new Date((localStorage.hasOwnProperty("TODOUpdateTime")) ? localStorage.getItem("TODOUpdateTime") : "2000-01-01T01:00:00Z");
 let TODOList = [];
