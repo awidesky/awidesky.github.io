@@ -4,7 +4,10 @@ function getGithubApiFail(redirectLocation) {
             localStorage.setItem("redirectLocation", redirectLocation);
             window.location.href = 'api_limit.html';
         } else {
-            alert(JSON.stringify(xhr, null, 4));
+            const str = "GitHub API Failed!!\nResponse :\n" + JSON.stringify(xhr, null, 4);
+            console.log(str);
+            console.trace();
+            alert(str);
         }
     }
 }
