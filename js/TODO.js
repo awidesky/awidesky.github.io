@@ -58,9 +58,10 @@ function TODO(repos) {
 						if(repo['name'] == "DocumentConverter") console.log((i - 1 + lineCnt) + " " + ct + " " + /\S/.test(str) + " \"" + str + " \"");
                         if (ct > 4) break;
                     }
-                    const indentCorrectedList = trimLeadingWS(surrounding.join("\n"));
+                    const indentCorrectedList = trimLeadingWS(surrounding);
                     indentCorrectedList[indexOfS] = "<span class='highlightedcode'>" + indentCorrectedList[indexOfS] + "</span>";
 					if(repo['name'] == "DocumentConverter") console.log("	surrounding\n" + surrounding.join("\n"));
+					if(repo['name'] == "DocumentConverter") console.log(surrounding);
 					if(repo['name'] == "DocumentConverter") console.log("	indentCorrectedList\n" + indentCorrectedList.join("\n"));
                     const surroundingStr = indentCorrectedList.filter(s => s.length != 0).join("<br>").replace(/[\r\n]/g, "");
                     s = s.substr(s.search(TODORegex));
@@ -156,16 +157,14 @@ function testSourceFile(f) {
 // my modification of https://stackoverflow.com/a/52432741/9287652
 // change : find smallest common indentation, not the first one.
 // also, return value is array of string. not a single string
-function trimLeadingWS(str) {
+function trimLeadingWS(splitted) {
     //Replace tab to 4 spaces
-    str = str.replace(/\t/g, "    ");
+    splitted.map(s => s.replace(/\t/g, "    "));
     //Get the initial indentation
     //But ignore new line characters
     const matcher = /^[\r\n]?(\s+)/;
-    //Split string to lines
-    const splitted = str.split(/[\n]/);
 
-    if (matcher.test(str)) {
+    if (splitted.every(s => matcher.test(s))) {
         //For each lines, 1. get s.match(matcher), second element of it is the captured leading whitespace : (\s+)
         //2. change all null(there is no leading spaces) to empty string
         //3. find value of minimum length.
