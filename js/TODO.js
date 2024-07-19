@@ -19,7 +19,7 @@ function TODO(repos) {
     return $.when.apply($, repos.map((repo) => {
         let pushedAt = new Date(repo.pushed_at);
         pushedAt.setTime(pushedAt.getTime() + (60 * 1000));
-        if(repo['name'] != "DocumentConverter") if (pushedAt <= TODOUpdateTime) return null;
+        if (pushedAt <= TODOUpdateTime) return null;
         return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['dev_branch'] + "?recursive=1").then((files) => {
             files = files.tree.filter((f) => f.type == "blob").filter(testSourceFile); //only check "blob"(file), not "tree"(directory).
             if(files.length == 0) return;
@@ -43,11 +43,9 @@ function TODO(repos) {
                             surrounding.unshift(str.replaceAll("<", "&lt").replaceAll(">", "&gt"));
                             ct++;
                         }
-						if(repo['name'] == "DocumentConverter") console.log((i - 1 - lineCnt) + " " + ct + " " + /\S/.test(str) + " \"" + str + " \"");
                         if (ct > 3) break;
                     }
                     const indexOfS = surrounding.length;
-					if(repo['name'] == "DocumentConverter") console.log("indexOfS " + indexOfS); 
                     ct = 0;
                     for (let lineCnt = 0; -1 < (i - 1 + lineCnt) && (i - 1 + lineCnt) < lines.length; lineCnt++) {
                         const str = lines[i - 1 + lineCnt];
@@ -55,14 +53,10 @@ function TODO(repos) {
                             surrounding.push(str.replaceAll("<", "&lt").replaceAll(">", "&gt"))
                             ct++;
                         }
-						if(repo['name'] == "DocumentConverter") console.log((i - 1 + lineCnt) + " " + ct + " " + /\S/.test(str) + " \"" + str + " \"");
                         if (ct > 4) break;
                     }
                     const indentCorrectedList = trimLeadingWS(surrounding);
                     indentCorrectedList[indexOfS] = "<span class='highlightedcode'>" + indentCorrectedList[indexOfS] + "</span>";
-					if(repo['name'] == "DocumentConverter") console.log("	surrounding\n" + surrounding.join("\n"));
-					if(repo['name'] == "DocumentConverter") console.log(surrounding);
-					if(repo['name'] == "DocumentConverter") console.log("	indentCorrectedList\n" + indentCorrectedList.join("\n"));
                     const surroundingStr = indentCorrectedList.filter(s => s.length != 0).join("<br>").replace(/[\r\n]/g, "");
                     s = s.substr(s.search(TODORegex));
                     obj.l = i;
