@@ -106,7 +106,7 @@ function readProjectJson(repo) {
     function findLatestMyproject(mpjson) { //find myproject.json in latest dev branch, and process it.
         if(mpjson == null) return Promise.resolve(null);
         mpjson = JSON.parse(mpjson);
-        if (repo['dev_branch'] != mpjson.dev_branch) {
+        if (Object.hasOwn(mpjson, 'dev_branch') && repo['dev_branch'] != mpjson.dev_branch) {
             repo['dev_branch'] = mpjson.dev_branch;
             return findGithubFile(repo['name'], repo['dev_branch'], "myproject.json", findLatestMyproject);
         }
