@@ -1,29 +1,37 @@
-function getGithubApiFail(redirectLocation) {
-    return (xhr) => {
-        if (xhr["responseText"].includes("API rate limit")) {
-            localStorage.setItem("redirectLocation", redirectLocation);
-            window.location.href = 'api_limit.html';
-        } else {
-            const str = "GitHub API Failed!!\nResponse :\n" + JSON.stringify(xhr, null, 4);
-            console.log(str);
-            console.trace();
-            alert(str);
-        }
+function checkIfRequestFailed(redirectLocation, failCallback = undefined) {
+    return (response) => {
+        if(response.ok) return response.json();
+        else return response.json().then(msg => {
+            if (msg.message.includes("API rate limit")) {
+                localStorage.setItem("redirectLocation", redirectLocation);
+                window.location.href = 'api_limit.html';
+            } else {
+                const str = "Failed to fetch : " + response.url + "\nResponse(" + response.status + ") :\n" + JSON.stringify(msg, null, 4);
+                console.log(str);
+                console.trace();
+                alert(str);
+                if(failCallback != undefined) {
+                    return failCallback();
+                }
+            }
+        });
     }
 }
 
-function getGithubAPI(query, callback = (d) => d) {
-    return $.getJSON('https://api.github.com/' + query, (d, s, jqXHR) => {
-                localStorage.setItem("x-ratelimit-remaining", jqXHR.getResponseHeader("x-ratelimit-remaining"));
-                localStorage.setItem("x-ratelimit-limit", jqXHR.getResponseHeader("x-ratelimit-limit"));
-                localStorage.setItem("x-ratelimit-reset", jqXHR.getResponseHeader("x-ratelimit-reset"));
-                return d;
+function getGithubAPI(query, callback = (d) => d, failCallback = undefined) {
+    const url = 'https://api.github.com/' + query;
+    return fetch(url)
+            .then((response) => {
+                localStorage.setItem("x-ratelimit-remaining", response.headers.get("x-ratelimit-remaining"));
+                localStorage.setItem("x-ratelimit-limit", response.headers.get("x-ratelimit-limit"));
+                localStorage.setItem("x-ratelimit-reset", response.headers.get("x-ratelimit-reset"));
+                return response;
             })
-            .then(callback)
-            .fail(getGithubApiFail(window.location));
+            .then(checkIfRequestFailed(window.location, failCallback))
+            .then(callback);
 }
 
-function findGithubFile(repo, branch, file, callback = (t) => t) {
+function findGithubFile(repo, branch, file, callback = (t) => t, failCallback = () => Promise.resolve(null)) {
     /*
      Fetch file's content if exist.
      Even though it does not exist, that's not a problem.
@@ -33,13 +41,13 @@ function findGithubFile(repo, branch, file, callback = (t) => t) {
     return fetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
         .then((response) => {
             if (response.ok) {
-                //alert(response.header.get("content-type"));
                 return response.text();
             } else {
                 return Promise.resolve(null);
             }
         })
-        .then((t) => callback(t));
+        .catch(failCallback)
+        .then(callback);
 }
 
 function getRepositories(callback) {
