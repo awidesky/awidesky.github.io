@@ -89,6 +89,12 @@ function TODO(repos) {
             }
         });
 
+        TODOList.sort((t1, t2) => {
+            d1 = new Date(repos.find(r => r.name == t1.name).pushed_at);
+            d2 = new Date(repos.find(r => r.name == t2.name).pushed_at);
+            return d1 < d2 ? 1 : (d1 > d2 ? -1 : 0);
+        });
+
         document.getElementById('loading').remove();
         //TODO : sort by time
         TODOList.forEach(t => {
