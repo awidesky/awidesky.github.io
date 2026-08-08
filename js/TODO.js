@@ -25,6 +25,7 @@ function TODO(repos) {
             if(files.length == 0) return;
             const promiseList = [];
             files.forEach((f) => promiseList.push(findGithubFile(repo['name'], repo['dev_branch'], f.path).then((raw) => {
+                if (raw == null) return []; // prevents raw.split('\n') crash when a file's fetch ends up as null(429 or 5xx).
                 let list = [];
                 let i = 0;
                 let obj = {

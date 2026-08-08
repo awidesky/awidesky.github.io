@@ -31,6 +31,74 @@ function getGithubAPI(query, callback = (d) => d, failCallback = undefined) {
             .then(callback);
 }
 
+/*
+ raw.githubusercontent.com has its own per-IP limit(causing HTTP 429 "Too many requests"),
+ separate from the api.github.com REST limit. To avoid a burst of parallel raw fetches
+ tripping that throttle, all raw fetches go through a shared concurrency-limited pool
+ with exponential-backoff retries.
+*/
+let rawFetchQueue = [];
+let rawFetchActive = 0;
+const RAW_FETCH_CONCURRENCY = 8;
+const RAW_FETCH_MAX_RETRIES = 3;
+const RAW_FETCH_BACKOFF_CAP_MS = 30000;
+
+// fetch with exponential backoff on 429/5xx. Keeps the pool slot held during backoff,
+// so retries act as natural backpressure on the throttled domain.
+function fetchWithRetry(url) {
+    let attempt = 0;
+    return new Promise((resolve, reject) => {
+        const tryFetch = () => {
+            fetch(url).then((response) => {
+                if (response.status === 429 || (response.status >= 500 && response.status <= 599)) {
+                    if (attempt < RAW_FETCH_MAX_RETRIES) {
+                        attempt++;
+                        const delay = Math.min(1000 * Math.pow(2, attempt), RAW_FETCH_BACKOFF_CAP_MS);
+                        setTimeout(tryFetch, delay);
+                    } else {
+                        console.warn("raw.githubusercontent.com still " + response.status + " after " + RAW_FETCH_MAX_RETRIES + " retries, skipping : " + url);
+                        resolve(response);
+                    }
+                } else {
+                    resolve(response);
+                }
+            }).catch(reject);
+        };
+        tryFetch();
+    });
+}
+
+// Caller-facing entry point of the pool. It does not fetch immediately,
+// it enqueues a task (with the caller's resolve/reject) and then asks
+// pumpRawFetchQueue() to start it if a slot is free. The returned Promise
+// resolves/rejects only when the task actually runs.
+function throttledRawFetch(url) {
+    return new Promise((resolve, reject) => {
+        rawFetchQueue.push({ url, resolve, reject });
+        pumpRawFetchQueue();
+    });
+}
+
+// The pool scheduler. Runs whenever a slot frees up (or a task is enqueued):
+// while there is capacity (rawFetchActive < RAW_FETCH_CONCURRENCY) AND work
+// waiting (rawFetchQueue not empty), it pulls the next task off the FIFO queue,
+// reserves a slot, and kicks off fetchWithRetry() for it. When that fetch
+// finishes (resolve/reject/null), it releases the slot and calls itself again
+// to fill the vacancy — so at most RAW_FETCH_CONCURRENCY fetches are ever in flight.
+function pumpRawFetchQueue() {
+    while (rawFetchActive < RAW_FETCH_CONCURRENCY && rawFetchQueue.length > 0) {
+        const task = rawFetchQueue.shift();
+        rawFetchActive++;
+        fetchWithRetry(task.url)
+            .then(task.resolve)
+            .catch(() => task.resolve(null))
+            .finally(() => {
+                rawFetchActive--;
+                pumpRawFetchQueue();
+            });
+    }
+}
+
 function findGithubFile(repo, branch, file, callback = (t) => t, failCallback = () => Promise.resolve(null)) {
     /*
      Fetch file's content if exist.
@@ -38,9 +106,9 @@ function findGithubFile(repo, branch, file, callback = (t) => t, failCallback = 
      But we cannot suppress 404 error logs in browser.
      see : https://stackoverflow.com/questions/44019776/fetch-api-chrome-and-404-errors
     */
-    return fetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
+    return throttledRawFetch("https://raw.githubusercontent.com/awidesky/" + repo + "/" + branch + "/" + file)
         .then((response) => {
-            if (response.ok) {
+            if (response != null && response.ok) {
                 return response.text();
             } else {
                 return Promise.resolve(null);
