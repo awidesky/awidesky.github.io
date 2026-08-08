@@ -16,10 +16,15 @@ function TODO(repos) {
     const TODORegex = /TODO\s*:/;
     const now = new Date();
     const parentDiv = document.getElementById("TODOs");
+    // Counter for finished repos (closure over local state). The increment + text update
+    // is atomic in single-threaded JS, so the displayed count always matches how many repos
+    // have finished. Reuses the shared setLoadingProgress() helper (commons.js).
+    let reposDone = 0;
+    const incDone = () => setLoadingProgress(++reposDone, repos.length);
     return $.when.apply($, repos.map((repo) => {
         let pushedAt = new Date(repo.pushed_at);
         pushedAt.setTime(pushedAt.getTime() + (60 * 1000));
-        if (pushedAt <= TODOUpdateTime) return null;
+        if (pushedAt <= TODOUpdateTime) { incDone(); return null; }
         function searchTODO(files) {
             files = files.tree.filter((f) => f.type == "blob").filter(testSourceFile); //only check "blob"(file), not "tree"(directory).
             if(files.length == 0) return;
@@ -78,7 +83,8 @@ function TODO(repos) {
                 return { 'name': repo['name'], 'list': list };
             });
         }// end of searchTODO()
-        return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['dev_branch'] + "?recursive=1", searchTODO, () => Promise.resolve({"tree":[]}));
+        return getGithubAPI("repos/awidesky/" + repo['name'] + "/git/trees/" + repo['dev_branch'] + "?recursive=1", searchTODO, () => Promise.resolve({"tree":[]}))
+            .then((result) => { incDone(); return result; });
     })).then((...gatheredTODOList) => {
         gatheredTODOList.forEach(newt => {
             if (newt == null) return;

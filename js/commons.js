@@ -118,6 +118,13 @@ function findGithubFile(repo, branch, file, callback = (t) => t, failCallback = 
         .then(callback);
 }
 
+// Shared helper to show "Loading... (done/total repos)" progress. Both repos.html and TODO.html
+// use identical <div id="loading"><h1><i>Loading...</i></h1></div> markup, so one writer works for both.
+function setLoadingProgress(done, total) {
+    const el = document.querySelector("#loading h1 i");
+    if (el != null) el.textContent = "Loading... (" + done + "/" + total + ")";
+}
+
 function getRepositories(callback) {
     return getGithubAPI("users/awidesky", user => {
         let r_num = user.public_repos;
@@ -141,8 +148,13 @@ function getRepositories(callback) {
             const forked = data.filter(d => d.fork);
             forked.sort(comp);
             
-            return $.when.apply($, not_forked.map(repo => readProjectJson(repo)))
-                         .then(() => { callback(not_forked.filter(r => !r.hide), forked); });
+            // Count each repo as it finishes loading its myproject.json (via the raw fetch pool).
+            let loaded = 0;
+            return $.when.apply($, not_forked.map(repo => readProjectJson(repo).then(r => {
+                setLoadingProgress(++loaded, not_forked.length);
+                return r;
+            })))
+            .then(() => { callback(not_forked.filter(r => !r.hide), forked); });
         });
     });
 }
