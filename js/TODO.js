@@ -5,13 +5,30 @@ if (typeof String.prototype.replaceAll == "undefined") {
     }
 }
 
+// Repositories excluded from TODO search, matched by repo name.
+const TODO_EXCLUDED_REPOS = ["ogl-gdm"];
+
+// Cache format version. Bump this when the TODOList spec is changed, 
+// and the old version must be discarded and fully re-scan.
+const TODOListVersion = 1;
+
 let TODOUpdateTime = new Date((localStorage.hasOwnProperty("TODOUpdateTime")) ? localStorage.getItem("TODOUpdateTime") : "2000-01-01T01:00:00Z");
 let TODOList = [];
 let reposLength = -1;
 function TODO(repos) {
+    repos = repos.filter(r => !TODO_EXCLUDED_REPOS.includes(r.name));
     reposLength = repos.length;
+    
+    const savedVersion = parseInt(localStorage.getItem("TODOListVersion"));
+    if (isNaN(savedVersion) || savedVersion < TODOListVersion) {
+        localStorage.removeItem("TODOList");
+        localStorage.removeItem("TODOUpdateTime");
+        localStorage.setItem("TODOListVersion", String(TODOListVersion));
+    }
     if(localStorage.hasOwnProperty("TODOList")) {
-        TODOList = JSON.parse(LZString.decompress(localStorage.getItem("TODOList")));
+        // Exclude cached entries from excluded repos too
+        // (they may be left over from before the exclusion was added)
+        TODOList = JSON.parse(LZString.decompress(localStorage.getItem("TODOList"))).filter(t => !TODO_EXCLUDED_REPOS.includes(t.name));
     }
     const TODORegex = /TODO\s*:/;
     const now = new Date();
