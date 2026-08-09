@@ -160,13 +160,20 @@ function getRepositories(callback) {
 }
 
 
-/* Example of myproject.json
- {
-    "release": false,
-    "mavenLib": true,
-    "dev_branch": "dev",
-    "hide": false
- }
+/* myproject.json — optional per-repo config, read from the repo's dev branch.
+   All fields are optional; only the ones present are applied onto the repo object.
+
+   {
+       "release":    false,   // bool : show a "release" button linking to <repo>/releases (repos.js)
+       "mavenLib":   true,    // bool : show a "see in maven central" button (repos.js)
+       "dev_branch": "dev",   // str  : branch this file is read from, and the branch TODO.js scans.
+                              //        default = repo's default branch. If it differs from the
+                              //        current dev_branch, the file is re-read from the new one.
+       "hide":       false,   // bool : exclude the repo from repos.html AND from the TODO scan
+                              //        (getRepositories filters it out before the callback).
+       "TODOregex":  "TODO_"  // str  : custom regex for the TODO scan (TODO.js).
+                              //        default = /TODO\s*:/
+   }
  */
 function readProjectJson(repo) {
     //set default value of dev_branch property
