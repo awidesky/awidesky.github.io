@@ -18,7 +18,7 @@ let reposLength = -1;
 function TODO(repos) {
     repos = repos.filter(r => !TODO_EXCLUDED_REPOS.includes(r.name));
     reposLength = repos.length;
-    
+
     const savedVersion = parseInt(localStorage.getItem("TODOListVersion"));
     if (isNaN(savedVersion) || savedVersion < TODOListVersion) {
         localStorage.removeItem("TODOList");
@@ -30,7 +30,6 @@ function TODO(repos) {
         // (they may be left over from before the exclusion was added)
         TODOList = JSON.parse(LZString.decompress(localStorage.getItem("TODOList"))).filter(t => !TODO_EXCLUDED_REPOS.includes(t.name));
     }
-    const TODORegex = /TODO\s*:/;
     const now = new Date();
     const parentDiv = document.getElementById("TODOs");
     // Counter for finished repos (closure over local state). The increment + text update
@@ -39,6 +38,8 @@ function TODO(repos) {
     let reposDone = 0;
     const incDone = () => setLoadingProgress(++reposDone, repos.length);
     return $.when.apply($, repos.map((repo) => {
+        // Use the repo-specific TODOregex from its myproject.json if present, otherwise use the default.
+        const TODORegex = repo['TODOregex'] ? new RegExp(repo['TODOregex']) : /TODO\s*:/;
         let pushedAt = new Date(repo.pushed_at);
         pushedAt.setTime(pushedAt.getTime() + (60 * 1000));
         if (pushedAt <= TODOUpdateTime) { incDone(); return null; }
